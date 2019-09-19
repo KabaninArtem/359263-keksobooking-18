@@ -1,3 +1,5 @@
+'use strict';
+
 var mockInfo = {
   photos: [
     'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
