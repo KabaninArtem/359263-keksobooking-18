@@ -1,6 +1,6 @@
 'use strict';
 
-var mockInfo = {
+var MOCK_INFO = {
   photos: [
     'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
     'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
@@ -11,7 +11,7 @@ var mockInfo = {
   features: ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'],
   avatarTemplate: 'img/avatars/user0'
 };
-var mockQuantity = 8;
+var MOCK_QUANTITY = 8;
 var pinsMap = document.querySelector('.map__pins');
 var pinsMapPosition = pinsMap.getBoundingClientRect();
 var pinTemplate = {
@@ -28,20 +28,20 @@ function generateMockData(mockQ) {
   for (var i = 0; i < mockQ; i++) {
     var mockData = {
       author: {
-        avatar: mockInfo.avatarTemplate + (i + 1) + '.png',
+        avatar: MOCK_INFO.avatarTemplate + (i + 1) + '.png',
       },
       offer: {
         title: 'title' + i,
         address: '',
         price: generateRandomValue(100),
-        type: mockInfo.type[Math.floor(Math.random() * mockInfo.type.length)],
+        type: MOCK_INFO.type[Math.floor(Math.random() * MOCK_INFO.type.length)],
         rooms: generateRandomValue(3, 1),
         guests: generateRandomValue(3, 1),
-        checkin: mockInfo.times[generateRandomValue(mockInfo.times.length)],
-        checkout: mockInfo.times[generateRandomValue(mockInfo.times.length)],
-        features: mockInfo.features.slice(0, generateRandomValue(mockInfo.features.length)),
+        checkin: MOCK_INFO.times[generateRandomValue(MOCK_INFO.times.length)],
+        checkout: MOCK_INFO.times[generateRandomValue(MOCK_INFO.times.length)],
+        features: MOCK_INFO.features.slice(0, generateRandomValue(MOCK_INFO.features.length)),
         description: 'description' + i,
-        photos: mockInfo.photos.slice(0, generateRandomValue(mockInfo.photos.length)),
+        photos: MOCK_INFO.photos.slice(0, generateRandomValue(MOCK_INFO.photos.length)),
       },
       location: {
         x: generateRandomValue(pinsMapPosition.right - (pinTemplate.size / 2), pinsMapPosition.left + (pinTemplate.size / 2)),
@@ -74,4 +74,4 @@ function renderPins(mocks) {
   pinsMap.appendChild(fragment);
 }
 
-renderPins(generateMockData(mockQuantity));
+renderPins(generateMockData(MOCK_QUANTITY));
