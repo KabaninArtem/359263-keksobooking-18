@@ -63,8 +63,8 @@ function generateMockData(length) {
   return mocks;
 }
 
-function createPin(info) {
-  var pin = pinTemplate.element.content.cloneNode(true);
+function createPin(info, template) {
+  var pin = template.content.cloneNode(true);
   var pinButton = pin.querySelector('button');
   var pinImg = pin.querySelector('img');
   pinButton.style.left = info.location.x + 'px';
@@ -78,7 +78,7 @@ function createPin(info) {
 function renderPins(mocks) {
   var fragment = document.createDocumentFragment();
   for (var i = 0, len = mocks.length; i < len; i++) {
-    fragment.appendChild(createPin(mocks[i]));
+    fragment.appendChild(createPin(mocks[i], pinTemplate.element));
   }
   pinsMap.appendChild(fragment);
 }
