@@ -20,12 +20,21 @@ var pinTemplate = {
 };
 
 function generateRandomValue(max, min) {
-  return Math.floor((min || 0) + Math.random() * (max - (min || 0)));
+  min = min || 0;
+  return Math.floor(min + Math.random() * (max - min));
 }
 
-function generateMockData(mockQ) {
+function getRandomArray(array) {
+  return array.slice(0, generateRandomValue(array.length));
+}
+
+function getRandomElemFromArray(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function generateMockData(length) {
   var mocks = [];
-  for (var i = 0; i < mockQ; i++) {
+  for (var i = 0; i < length; i++) {
     var mockData = {
       author: {
         avatar: MOCK_INFO.avatarTemplate + (i + 1) + '.png',
@@ -34,14 +43,14 @@ function generateMockData(mockQ) {
         title: 'title' + i,
         address: '',
         price: generateRandomValue(100),
-        type: MOCK_INFO.type[Math.floor(Math.random() * MOCK_INFO.type.length)],
+        type: getRandomElemFromArray(MOCK_INFO.type),
         rooms: generateRandomValue(3, 1),
         guests: generateRandomValue(3, 1),
-        checkin: MOCK_INFO.times[generateRandomValue(MOCK_INFO.times.length)],
-        checkout: MOCK_INFO.times[generateRandomValue(MOCK_INFO.times.length)],
-        features: MOCK_INFO.features.slice(0, generateRandomValue(MOCK_INFO.features.length)),
+        checkin: getRandomElemFromArray(MOCK_INFO.times),
+        checkout: getRandomElemFromArray(MOCK_INFO.times),
+        features: getRandomArray(MOCK_INFO.features),
         description: 'description' + i,
-        photos: MOCK_INFO.photos.slice(0, generateRandomValue(MOCK_INFO.photos.length)),
+        photos: getRandomArray(MOCK_INFO.photos),
       },
       location: {
         x: generateRandomValue(pinsMapPosition.right - (pinTemplate.size / 2), pinsMapPosition.left + (pinTemplate.size / 2)),
