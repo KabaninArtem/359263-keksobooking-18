@@ -11,8 +11,18 @@ var MOCK_INFO = {
   features: ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'],
   avatarTemplate: 'img/avatars/user0'
 };
+var HUMANIZE_TYPE = {
+  flat: 'Квартира',
+  bungalo: 'Бунгало',
+  house: 'Дом',
+  palace: 'Дворец',
+};
+var featureClassTemplate = 'popup__feature--';
 var MOCK_QUANTITY = 8;
+var mocksList = generateMockData(MOCK_QUANTITY);
 var pinsMap = document.querySelector('.map__pins');
+var cardTemplate = document.querySelector('#card');
+var filtersContainer = document.querySelector('.map__filters-container');
 var pinsMapPosition = pinsMap.getBoundingClientRect();
 var pinTemplate = {
   element: document.querySelector('#pin'),
@@ -83,4 +93,58 @@ function renderPins(mocks) {
   pinsMap.appendChild(fragment);
 }
 
-renderPins(generateMockData(MOCK_QUANTITY));
+function findElementByClass(parent, className) {
+  return parent.querySelector(className);
+}
+
+function appendFeatureList(container, features) {
+  container.innerHTML = '';
+  for (var i = 0, len = features.length; i < len; i++) {
+    var feature = document.createElement('li');
+    feature.classList.add('popup__feature', featureClassTemplate + features[i]);
+    container.appendChild(feature);
+  }
+}
+
+function appendPhotos(container, photos) {
+  var imgTemplate = container.querySelector('img');
+  for (var i = 0, len = photos.length; i < len; i++) {
+    var img = imgTemplate.cloneNode();
+    img.src = photos[i];
+    container.appendChild(img);
+  }
+  container.removeChild(imgTemplate);
+}
+
+function createCard(template, data) {
+  var card = template.cloneNode(true).content;
+  var title = findElementByClass(card, '.popup__title');
+  var address = findElementByClass(card, '.popup__text--address');
+  var price = findElementByClass(card, '.popup__text--price');
+  var type = findElementByClass(card, '.popup__type');
+  var capicity = findElementByClass(card, '.popup__text--capacity');
+  var time = findElementByClass(card, '.popup__text--time');
+  var features = findElementByClass(card, '.popup__features');
+  var description = findElementByClass(card, '.popup__description');
+  var photos = findElementByClass(card, '.popup__photos');
+  var avatar = findElementByClass(card, '.popup__avatar ');
+  title.textContent = data.offer.title;
+  address.textContent = data.offer.address;
+  price.textContent = data.offer.price + '₽/ночь';
+  type.textContent = HUMANIZE_TYPE[data.offer.type];
+  capicity.textContent = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей';
+  time.textContent = 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout;
+  description.textContent = data.offer.description;
+  avatar.src = data.author.avatar;
+  appendFeatureList(features, data.offer.features);
+  appendPhotos(photos, data.offer.photos);
+  return card;
+}
+
+function renderDescriptionCard(template, data) {
+  var card = createCard(template, data);
+  filtersContainer.appendChild(card);
+}
+
+renderPins(mocksList);
+renderDescriptionCard(cardTemplate, mocksList[0]);
