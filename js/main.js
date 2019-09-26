@@ -1,5 +1,6 @@
 'use strict';
 
+var ENTER_KEYCODE = 13;
 var MOCK_INFO = {
   photos: [
     'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -19,19 +20,35 @@ var HUMANIZE_TYPE = {
 };
 var featureClassTemplate = 'popup__feature--';
 var MOCK_QUANTITY = 8;
-var mocksList = generateMockData(MOCK_QUANTITY);
-var pinsMap = document.querySelector('.map__pins');
-var cardTemplate = document.querySelector('#card');
-var filtersContainer = document.querySelector('.map__filters-container');
-var pinsMapPosition = pinsMap.getBoundingClientRect();
+var NOT_FOR_GUESTS_QUANTITY = '100';
+var NOT_FOR_GUESTS_VALUE = '0';
 var pinTemplate = {
   element: document.querySelector('#pin'),
-  size: 65,
+  width: 65,
+  height: 87
 };
+var roomNumber = document.querySelector('#room_number');
+var pinsMap = document.querySelector('.map__pins');
+var map = document.querySelector('.map');
+var mainPin = document.querySelector('.map__pin--main');
+var adForm = document.querySelector('.ad-form');
+var filtersContainer = document.querySelector('.map__filters-container');
+var mocksList = generateMockData(MOCK_QUANTITY);
 
 function generateRandomValue(max, min) {
   min = min || 0;
   return Math.floor(min + Math.random() * (max - min));
+}
+
+function getElementPosition(element) {
+  return element.getBoundingClientRect();
+}
+
+function getPinPosition(pin) {
+  return {
+    x: Math.floor(pin.offsetLeft + pinTemplate.width / 2),
+    y: Math.floor(pin.offsetTop + pinTemplate.height),
+  };
 }
 
 function getRandomArray(array) {
@@ -43,6 +60,7 @@ function getRandomElemFromArray(array) {
 }
 
 function generateMockData(length) {
+  var pinsMapPosition = getElementPosition(pinsMap);
   var mocks = [];
   for (var i = 0; i < length; i++) {
     var mockData = {
@@ -63,7 +81,7 @@ function generateMockData(length) {
         photos: getRandomArray(MOCK_INFO.photos),
       },
       location: {
-        x: generateRandomValue(pinsMapPosition.right - (pinTemplate.size / 2), pinsMapPosition.left + (pinTemplate.size / 2)),
+        x: generateRandomValue(pinsMapPosition.right - (pinTemplate.width / 2), pinsMapPosition.left + (pinTemplate.width / 2)),
         y: generateRandomValue(630, 130),
       }
     };
@@ -141,10 +159,55 @@ function createCard(template, data) {
   return card;
 }
 
-function renderDescriptionCard(template, data) {
+function renderDescriptionCard(data) {
+  var template = document.querySelector('#card');
   var card = createCard(template, data);
   filtersContainer.appendChild(card);
 }
 
-renderPins(mocksList);
-renderDescriptionCard(cardTemplate, mocksList[0]);
+// renderPins(mocksList);
+// renderDescriptionCard(mocksList[0])
+
+function prepareFormInputs(form, isDisabled) {
+  var fieldsets = form.querySelectorAll('fieldset');
+
+  for (var i = 0, len = fieldsets.length; i < len; i++) {
+    fieldsets[i].disabled = isDisabled || false;
+  }
+}
+
+function setAddressOfPin(pin) {
+  var addressInput = document.querySelector('#address');
+  var position = getPinPosition(pin);
+  addressInput.value = position.x + ', ' + position.y;
+}
+
+function activatePage() {
+  removeClass(map, 'map--faded');
+  removeClass(adForm, 'ad-form--disabled');
+  prepareFormInputs(adForm, false);
+  setAddressOfPin(mainPin);
+}
+
+function removeClass(elem, className) {
+  elem.classList.remove(className);
+}
+
+function onPinEnterPress(evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activatePage();
+  }
+}
+
+function onRoomQuantityChange(evt) {
+  var capacitySelect = document.querySelector('#capacity');
+  var quantity = evt.target.value;
+  capacitySelect.value = quantity !== NOT_FOR_GUESTS_QUANTITY ? quantity : NOT_FOR_GUESTS_VALUE;
+}
+
+prepareFormInputs(adForm, true);
+setAddressOfPin(mainPin);
+
+mainPin.addEventListener('mousedown', activatePage);
+mainPin.addEventListener('keydown', onPinEnterPress);
+roomNumber.addEventListener('change', onRoomQuantityChange);
