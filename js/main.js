@@ -18,22 +18,15 @@ var HUMANIZE_TYPE = {
   house: 'Дом',
   palace: 'Дворец',
 };
-var featureClassTemplate = 'popup__feature--';
+var FEATURE_CLASS_TEMAPLTE = 'popup__feature--';
 var MOCK_QUANTITY = 8;
 var NOT_FOR_GUESTS_QUANTITY = '100';
 var NOT_FOR_GUESTS_VALUE = '0';
-var pinTemplate = {
+var PIN_TEMPLATE = {
   element: document.querySelector('#pin'),
   width: 65,
   height: 87
 };
-var roomNumber = document.querySelector('#room_number');
-var pinsMap = document.querySelector('.map__pins');
-var map = document.querySelector('.map');
-var mainPin = document.querySelector('.map__pin--main');
-var adForm = document.querySelector('.ad-form');
-var filtersContainer = document.querySelector('.map__filters-container');
-var mocksList = generateMockData(MOCK_QUANTITY);
 
 function generateRandomValue(max, min) {
   min = min || 0;
@@ -46,8 +39,8 @@ function getElementPosition(element) {
 
 function getPinPosition(pin) {
   return {
-    x: Math.floor(pin.offsetLeft + pinTemplate.width / 2),
-    y: Math.floor(pin.offsetTop + pinTemplate.height),
+    x: Math.floor(pin.offsetLeft + PIN_TEMPLATE.width / 2),
+    y: Math.floor(pin.offsetTop + PIN_TEMPLATE.height),
   };
 }
 
@@ -60,7 +53,8 @@ function getRandomElemFromArray(array) {
 }
 
 function generateMockData(length) {
-  var pinsMapPosition = getElementPosition(pinsMap);
+  var map = document.querySelector('.map__pins');
+  var mapPosition = getElementPosition(map);
   var mocks = [];
   for (var i = 0; i < length; i++) {
     var mockData = {
@@ -81,7 +75,7 @@ function generateMockData(length) {
         photos: getRandomArray(MOCK_INFO.photos),
       },
       location: {
-        x: generateRandomValue(pinsMapPosition.right - (pinTemplate.width / 2), pinsMapPosition.left + (pinTemplate.width / 2)),
+        x: generateRandomValue(mapPosition.right - (PIN_TEMPLATE.width / 2), mapPosition.left + (PIN_TEMPLATE.width / 2)),
         y: generateRandomValue(630, 130),
       }
     };
@@ -104,11 +98,12 @@ function createPin(info, template) {
 }
 
 function renderPins(mocks) {
+  var map = document.querySelector('.map__pins');
   var fragment = document.createDocumentFragment();
   for (var i = 0, len = mocks.length; i < len; i++) {
-    fragment.appendChild(createPin(mocks[i], pinTemplate.element));
+    fragment.appendChild(createPin(mocks[i], PIN_TEMPLATE.element));
   }
-  pinsMap.appendChild(fragment);
+  map.appendChild(fragment);
 }
 
 function findElementByClass(parent, className) {
@@ -119,7 +114,7 @@ function appendFeatureList(container, features) {
   container.innerHTML = '';
   for (var i = 0, len = features.length; i < len; i++) {
     var feature = document.createElement('li');
-    feature.classList.add('popup__feature', featureClassTemplate + features[i]);
+    feature.classList.add('popup__feature', FEATURE_CLASS_TEMAPLTE + features[i]);
     container.appendChild(feature);
   }
 }
@@ -204,6 +199,13 @@ function onRoomQuantityChange(evt) {
   var quantity = evt.target.value;
   capacitySelect.value = quantity !== NOT_FOR_GUESTS_QUANTITY ? quantity : NOT_FOR_GUESTS_VALUE;
 }
+
+var roomNumber = document.querySelector('#room_number');
+var map = document.querySelector('.map');
+var mainPin = document.querySelector('.map__pin--main');
+var adForm = document.querySelector('.ad-form');
+var filtersContainer = document.querySelector('.map__filters-container');
+var mocksList = generateMockData(MOCK_QUANTITY);
 
 prepareFormInputs(adForm, true);
 setAddressOfPin(mainPin);
