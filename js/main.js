@@ -23,7 +23,6 @@ var MOCK_QUANTITY = 8;
 var NOT_FOR_GUESTS_QUANTITY = '100';
 var NOT_FOR_GUESTS_VALUE = '0';
 var PIN_TEMPLATE = {
-  element: document.querySelector('#pin'),
   width: 65,
   height: 87
 };
@@ -31,10 +30,6 @@ var PIN_TEMPLATE = {
 function generateRandomValue(max, min) {
   min = min || 0;
   return Math.floor(min + Math.random() * (max - min));
-}
-
-function getElementPosition(element) {
-  return element.getBoundingClientRect();
 }
 
 function getPinPosition(pin) {
@@ -52,9 +47,8 @@ function getRandomElemFromArray(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
 
-function generateMockData(length) {
-  var map = document.querySelector('.map__pins');
-  var mapPosition = getElementPosition(map);
+function generateMockData(length, mapPins) {
+  var mapPosition = mapPins.getBoundingClientRect();
   var mocks = [];
   for (var i = 0; i < length; i++) {
     var mockData = {
@@ -97,14 +91,14 @@ function createPin(info, template) {
   return pin;
 }
 
-function renderPins(mocks) {
-  var map = document.querySelector('.map__pins');
-  var fragment = document.createDocumentFragment();
-  for (var i = 0, len = mocks.length; i < len; i++) {
-    fragment.appendChild(createPin(mocks[i], PIN_TEMPLATE.element));
-  }
-  map.appendChild(fragment);
-}
+// function renderPins(mocks, pinsContainer) {
+//   var fragment = document.createDocumentFragment();
+//   var template = document.querySelector('#pin');
+//   for (var i = 0, len = mocks.length; i < len; i++) {
+//     fragment.appendChild(createPin(mocks[i], template));
+//   }
+//   pinsContainer.appendChild(fragment);
+// }
 
 function findElementByClass(parent, className) {
   return parent.querySelector(className);
@@ -156,6 +150,7 @@ function createCard(template, data) {
 
 function renderDescriptionCard(data) {
   var template = document.querySelector('#card');
+  var filtersContainer = document.querySelector('.map__filters-container');
   var card = createCard(template, data);
   filtersContainer.appendChild(card);
 }
@@ -202,10 +197,10 @@ function onRoomQuantityChange(evt) {
 
 var roomNumber = document.querySelector('#room_number');
 var map = document.querySelector('.map');
+var mapPins = document.querySelector('.map__pins');
 var mainPin = document.querySelector('.map__pin--main');
 var adForm = document.querySelector('.ad-form');
-var filtersContainer = document.querySelector('.map__filters-container');
-var mocksList = generateMockData(MOCK_QUANTITY);
+var mocksList = generateMockData(MOCK_QUANTITY, mapPins);
 
 prepareFormInputs(adForm, true);
 setAddressOfPin(mainPin);
