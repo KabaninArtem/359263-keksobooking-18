@@ -87,21 +87,20 @@ function createPin(info, template) {
   pinButton.style.top = info.location.y + 'px';
   pinImg.src = info.author.avatar;
   pinImg.alt = info.offer.title;
-
+  pinButton.addEventListener('click', function () {
+    removeDescriptionCard(map);
+    renderDescriptionCard(info, filtersContainer);
+  });
   return pin;
 }
 
-// function renderPins(mocks, pinsContainer) {
-//   var fragment = document.createDocumentFragment();
-//   var template = document.querySelector('#pin');
-//   for (var i = 0, len = mocks.length; i < len; i++) {
-//     fragment.appendChild(createPin(mocks[i], template));
-//   }
-//   pinsContainer.appendChild(fragment);
-// }
-
-function findElementByClass(parent, className) {
-  return parent.querySelector(className);
+function renderPins(mocks, pinsContainer) {
+  var fragment = document.createDocumentFragment();
+  var template = document.querySelector('#pin');
+  for (var i = 0, len = mocks.length; i < len; i++) {
+    fragment.appendChild(createPin(mocks[i], template));
+  }
+  pinsContainer.appendChild(fragment);
 }
 
 function appendFeatureList(container, features) {
@@ -125,16 +124,16 @@ function appendPhotos(container, photos) {
 
 function createCard(template, data) {
   var card = template.cloneNode(true).content;
-  var title = findElementByClass(card, '.popup__title');
-  var address = findElementByClass(card, '.popup__text--address');
-  var price = findElementByClass(card, '.popup__text--price');
-  var type = findElementByClass(card, '.popup__type');
-  var capicity = findElementByClass(card, '.popup__text--capacity');
-  var time = findElementByClass(card, '.popup__text--time');
-  var features = findElementByClass(card, '.popup__features');
-  var description = findElementByClass(card, '.popup__description');
-  var photos = findElementByClass(card, '.popup__photos');
-  var avatar = findElementByClass(card, '.popup__avatar ');
+  var title = card.querySelector('.popup__title');
+  var address = card.querySelector('.popup__text--address');
+  var price = card.querySelector('.popup__text--price');
+  var type = card.querySelector('.popup__type');
+  var capicity = card.querySelector('.popup__text--capacity');
+  var time = card.querySelector('.popup__text--time');
+  var features = card.querySelector('.popup__features');
+  var description = card.querySelector('.popup__description');
+  var photos = card.querySelector('.popup__photos');
+  var avatar = card.querySelector('.popup__avatar');
   title.textContent = data.offer.title;
   address.textContent = data.offer.address;
   price.textContent = data.offer.price + '₽/ночь';
@@ -148,15 +147,18 @@ function createCard(template, data) {
   return card;
 }
 
-function renderDescriptionCard(data) {
-  var template = document.querySelector('#card');
-  var filtersContainer = document.querySelector('.map__filters-container');
-  var card = createCard(template, data);
-  filtersContainer.appendChild(card);
+function removeDescriptionCard(map) {
+  var activeCard = map.querySelector('.map__card');
+  if (activeCard) {
+    map.removeChild(activeCard);
+  }
 }
 
-// renderPins(mocksList);
-// renderDescriptionCard(mocksList[0])
+function renderDescriptionCard(data, filtersContainer) {
+  var template = document.querySelector('#card');
+  var card = createCard(template, data);
+  map.insertBefore(card, filtersContainer);
+}
 
 function prepareFormInputs(form, isDisabled) {
   var fieldsets = form.querySelectorAll('fieldset');
@@ -175,6 +177,7 @@ function setAddressOfPin(pin) {
 function activatePage() {
   removeClass(map, 'map--faded');
   removeClass(adForm, 'ad-form--disabled');
+  renderPins(mocksList, mapPins);
   prepareFormInputs(adForm, false);
   setAddressOfPin(mainPin);
 }
@@ -195,16 +198,18 @@ function onRoomQuantityChange(evt) {
   capacitySelect.value = quantity !== NOT_FOR_GUESTS_QUANTITY ? quantity : NOT_FOR_GUESTS_VALUE;
 }
 
+var activeDescriptionCard = null;
 var roomNumber = document.querySelector('#room_number');
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
 var mainPin = document.querySelector('.map__pin--main');
 var adForm = document.querySelector('.ad-form');
+var filtersContainer = document.querySelector('.map__filters-container');
 var mocksList = generateMockData(MOCK_QUANTITY, mapPins);
 
 prepareFormInputs(adForm, true);
 setAddressOfPin(mainPin);
-
+// renderDescriptionCard(mocksList[0]);
 mainPin.addEventListener('mousedown', activatePage);
 mainPin.addEventListener('keydown', onPinEnterPress);
 roomNumber.addEventListener('change', onRoomQuantityChange);
