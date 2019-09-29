@@ -13,9 +13,15 @@ var MOCK_INFO = {
   features: ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'],
   avatarTemplate: 'img/avatars/user0'
 };
+var PRICES = {
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000,
+};
 var HUMANIZE_TYPE = {
-  flat: 'Квартира',
   bungalo: 'Бунгало',
+  flat: 'Квартира',
   house: 'Дом',
   palace: 'Дворец',
 };
@@ -208,10 +214,27 @@ function onRoomQuantityChange(evt) {
   capacitySelect.value = quantity !== NOT_FOR_GUESTS_QUANTITY ? quantity : NOT_FOR_GUESTS_VALUE;
 }
 
+function onHouseTypeChange(evt) {
+  var type = evt.target.value;
+  var minPrice = PRICES[type] || 0;
+  var priceElem = document.querySelector('#price');
+  priceElem.min = minPrice;
+  priceElem.placeholder = minPrice;
+}
+
+function onTimeChange(evt) {
+  var activeElem = evt.target;
+  var elemToChange = activeElem.id === 'timein' ? timeout : timein;
+  elemToChange.value = activeElem.value;
+}
+
 var roomNumber = document.querySelector('#room_number');
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
 var mainPin = document.querySelector('.map__pin--main');
+var houseType = document.querySelector('#type');
+var timein = document.querySelector('#timein');
+var timeout = document.querySelector('#timeout');
 var adForm = document.querySelector('.ad-form');
 var filtersContainer = document.querySelector('.map__filters-container');
 var mocksList = generateMockData(MOCK_QUANTITY, mapPins);
@@ -221,3 +244,6 @@ setAddressOfPin(mainPin);
 mainPin.addEventListener('mousedown', activatePage);
 mainPin.addEventListener('keydown', onPinEnterPress);
 roomNumber.addEventListener('change', onRoomQuantityChange);
+houseType.addEventListener('change', onHouseTypeChange);
+timein.addEventListener('change', onTimeChange);
+timeout.addEventListener('change', onTimeChange);
