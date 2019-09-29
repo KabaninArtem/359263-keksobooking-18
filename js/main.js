@@ -1,6 +1,7 @@
 'use strict';
 
 var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
 var MOCK_INFO = {
   photos: [
     'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -88,8 +89,8 @@ function createPin(info, template) {
   pinImg.src = info.author.avatar;
   pinImg.alt = info.offer.title;
   pinButton.addEventListener('click', function () {
-    removeDescriptionCard(map);
-    renderDescriptionCard(info, filtersContainer);
+    closeDescriptionCard(map);
+    openDescriptionCard(info, filtersContainer);
   });
   return pin;
 }
@@ -147,17 +148,26 @@ function createCard(template, data) {
   return card;
 }
 
-function removeDescriptionCard(map) {
+function closeDescriptionCard(map) {
   var activeCard = map.querySelector('.map__card');
   if (activeCard) {
     map.removeChild(activeCard);
   }
 }
 
-function renderDescriptionCard(data, filtersContainer) {
+function openDescriptionCard(data, filtersContainer) {
   var template = document.querySelector('#card');
   var card = createCard(template, data);
+  var closeButton = card.querySelector('.popup__close');
   map.insertBefore(card, filtersContainer);
+  document.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      closeDescriptionCard(map);
+    }
+  });
+  closeButton.addEventListener('click', function () {
+    closeDescriptionCard(map);
+  });
 }
 
 function prepareFormInputs(form, isDisabled) {
@@ -198,7 +208,6 @@ function onRoomQuantityChange(evt) {
   capacitySelect.value = quantity !== NOT_FOR_GUESTS_QUANTITY ? quantity : NOT_FOR_GUESTS_VALUE;
 }
 
-var activeDescriptionCard = null;
 var roomNumber = document.querySelector('#room_number');
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
@@ -209,7 +218,6 @@ var mocksList = generateMockData(MOCK_QUANTITY, mapPins);
 
 prepareFormInputs(adForm, true);
 setAddressOfPin(mainPin);
-// renderDescriptionCard(mocksList[0]);
 mainPin.addEventListener('mousedown', activatePage);
 mainPin.addEventListener('keydown', onPinEnterPress);
 roomNumber.addEventListener('change', onRoomQuantityChange);
