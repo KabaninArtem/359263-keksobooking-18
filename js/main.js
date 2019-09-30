@@ -189,10 +189,16 @@ function onPinEnterPress(evt) {
   }
 }
 
-function onRoomQuantityChange(evt) {
-  var capacitySelect = document.querySelector('#capacity');
+function onRoomQuantityChange(evt, capacity) {
   var quantity = evt.target.value;
-  capacitySelect.value = quantity !== NOT_FOR_GUESTS_QUANTITY ? quantity : NOT_FOR_GUESTS_VALUE;
+
+  if (quantity === NOT_FOR_GUESTS_QUANTITY) {
+    capacity.value = NOT_FOR_GUESTS_VALUE;
+  } else if (quantity === NOT_FOR_GUESTS_VALUE) {
+    capacity.value = NOT_FOR_GUESTS_QUANTITY;
+  } else {
+    capacity.value = quantity;
+  }
 }
 
 var roomNumber = document.querySelector('#room_number');
@@ -200,6 +206,7 @@ var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
 var mainPin = document.querySelector('.map__pin--main');
 var adForm = document.querySelector('.ad-form');
+var capacitySelect = document.querySelector('#capacity');
 var mocksList = generateMockData(MOCK_QUANTITY, mapPins);
 
 prepareFormInputs(adForm, true);
@@ -207,4 +214,9 @@ setAddressOfPin(mainPin);
 
 mainPin.addEventListener('mousedown', activatePage);
 mainPin.addEventListener('keydown', onPinEnterPress);
-roomNumber.addEventListener('change', onRoomQuantityChange);
+roomNumber.addEventListener('change', function (evt) {
+  onRoomQuantityChange(evt, capacitySelect);
+});
+capacitySelect.addEventListener('change', function (evt) {
+  onRoomQuantityChange(evt, roomNumber);
+});
