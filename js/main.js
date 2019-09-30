@@ -1,7 +1,6 @@
 'use strict';
 
 var ENTER_KEYCODE = 13;
-var ESC_KEYCODE = 27;
 var MOCK_INFO = {
   photos: [
     'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
@@ -208,10 +207,16 @@ function onPinEnterPress(evt) {
   }
 }
 
-function onRoomQuantityChange(evt) {
-  var capacitySelect = document.querySelector('#capacity');
+function onRoomQuantityChange(evt, capacity) {
   var quantity = evt.target.value;
-  capacitySelect.value = quantity !== NOT_FOR_GUESTS_QUANTITY ? quantity : NOT_FOR_GUESTS_VALUE;
+
+  if (quantity === NOT_FOR_GUESTS_QUANTITY) {
+    capacity.value = NOT_FOR_GUESTS_VALUE;
+  } else if (quantity === NOT_FOR_GUESTS_VALUE) {
+    capacity.value = NOT_FOR_GUESTS_QUANTITY;
+  } else {
+    capacity.value = quantity;
+  }
 }
 
 function onHouseTypeChange(evt) {
@@ -237,13 +242,19 @@ var timein = document.querySelector('#timein');
 var timeout = document.querySelector('#timeout');
 var adForm = document.querySelector('.ad-form');
 var filtersContainer = document.querySelector('.map__filters-container');
+var capacitySelect = document.querySelector('#capacity');
 var mocksList = generateMockData(MOCK_QUANTITY, mapPins);
 
 prepareFormInputs(adForm, true);
 setAddressOfPin(mainPin);
 mainPin.addEventListener('mousedown', activatePage);
 mainPin.addEventListener('keydown', onPinEnterPress);
-roomNumber.addEventListener('change', onRoomQuantityChange);
+roomNumber.addEventListener('change', function (evt) {
+  onRoomQuantityChange(evt, capacitySelect);
+});
+capacitySelect.addEventListener('change', function (evt) {
+  onRoomQuantityChange(evt, roomNumber);
+});
 houseType.addEventListener('change', onHouseTypeChange);
 timein.addEventListener('change', onTimeChange);
 timeout.addEventListener('change', onTimeChange);
