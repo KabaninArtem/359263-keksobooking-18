@@ -1,6 +1,7 @@
 'use strict';
 
 var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
 var MOCK_INFO = {
   photos: [
     'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
