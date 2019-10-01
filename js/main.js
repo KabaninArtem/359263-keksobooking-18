@@ -96,18 +96,18 @@ function createPin(info, template) {
   pinImg.alt = info.offer.title;
   pinButton.addEventListener('click', function () {
     closeDescriptionCard(map);
-    openDescriptionCard(info, filtersContainer);
+    openDescriptionCard(info, filtersContainer, map);
   });
   return pin;
 }
 
-function renderPins(mocks, pinsContainer) {
+function createPins(mocks) {
   var fragment = document.createDocumentFragment();
   var template = document.querySelector('#pin');
   for (var i = 0, len = mocks.length; i < len; i++) {
     fragment.appendChild(createPin(mocks[i], template));
   }
-  pinsContainer.appendChild(fragment);
+  return fragment;
 }
 
 function appendFeatureList(container, features) {
@@ -159,21 +159,26 @@ function closeDescriptionCard(map) {
   if (activeCard) {
     map.removeChild(activeCard);
   }
+  document.removeEventListener('keydown', onDescriptionKeydown);
 }
 
-function openDescriptionCard(data, filtersContainer) {
+function onDescriptionKeydown(evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeDescriptionCard(map);
+  }
+}
+
+function onDescriptionClick() {
+  closeDescriptionCard(map);
+}
+
+function openDescriptionCard(data, filtersContainer, wrapper) {
   var template = document.querySelector('#card');
   var card = createCard(template, data);
   var closeButton = card.querySelector('.popup__close');
-  map.insertBefore(card, filtersContainer);
-  document.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
-      closeDescriptionCard(map);
-    }
-  });
-  closeButton.addEventListener('click', function () {
-    closeDescriptionCard(map);
-  });
+  wrapper.insertBefore(card, filtersContainer);
+  document.addEventListener('keydown', onDescriptionKeydown);
+  closeButton.addEventListener('click', onDescriptionClick);
 }
 
 function prepareFormInputs(form, isDisabled) {
@@ -190,10 +195,11 @@ function setAddressOfPin(pin) {
   addressInput.value = position.x + ', ' + position.y;
 }
 
-function activatePage() {
+function activatePage(pinsContainer) {
+  var pins = createPins(mocksList, mapPins);
   removeClass(map, 'map--faded');
   removeClass(adForm, 'ad-form--disabled');
-  renderPins(mocksList, mapPins);
+  pinsContainer.appendChild(pins);
   prepareFormInputs(adForm, false);
   setAddressOfPin(mainPin);
 }
@@ -204,7 +210,7 @@ function removeClass(elem, className) {
 
 function onPinEnterPress(evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    activatePage();
+    activatePage(mapPins);
   }
 }
 
@@ -213,11 +219,20 @@ function onRoomQuantityChange(evt, capacity) {
 
   if (quantity === NOT_FOR_GUESTS_QUANTITY) {
     capacity.value = NOT_FOR_GUESTS_VALUE;
-  } else if (quantity === NOT_FOR_GUESTS_VALUE) {
-    capacity.value = NOT_FOR_GUESTS_QUANTITY;
   } else {
-    capacity.value = quantity;
+    capacity.value = +quantity < +capacity.value || capacity.value === NOT_FOR_GUESTS_VALUE ? quantity : capacity.value;
   }
+}
+
+function onCapacityChange(evt, quantity) {
+  var capacity = evt.target.value;
+
+  if (capacity === NOT_FOR_GUESTS_VALUE) {
+    quantity.value = NOT_FOR_GUESTS_QUANTITY;
+  } else {
+    quantity.value = +capacity > +quantity.value || quantity.value === NOT_FOR_GUESTS_QUANTITY ? capacity : quantity.value;
+  }
+
 }
 
 function onHouseTypeChange(evt) {
@@ -248,13 +263,15 @@ var mocksList = generateMockData(MOCK_QUANTITY, mapPins);
 
 prepareFormInputs(adForm, true);
 setAddressOfPin(mainPin);
-mainPin.addEventListener('mousedown', activatePage);
+mainPin.addEventListener('mousedown', function () {
+  activatePage(mapPins);
+});
 mainPin.addEventListener('keydown', onPinEnterPress);
 roomNumber.addEventListener('change', function (evt) {
   onRoomQuantityChange(evt, capacitySelect);
 });
 capacitySelect.addEventListener('change', function (evt) {
-  onRoomQuantityChange(evt, roomNumber);
+  onCapacityChange(evt, roomNumber);
 });
 houseType.addEventListener('change', onHouseTypeChange);
 timein.addEventListener('change', onTimeChange);
