@@ -2,9 +2,15 @@
 
 (function () {
   var FEATURE_CLASS_TEMAPLTE = 'popup__feature--';
-  var map = document.querySelector('.map');
+  var HUMANIZE_TYPE = {
+    bungalo: 'Бунгало',
+    flat: 'Квартира',
+    house: 'Дом',
+    palace: 'Дворец',
+  };
 
   function createDetailsPopUp(template, data, houseHumanizeType) {
+    houseHumanizeType = houseHumanizeType || HUMANIZE_TYPE;
     var card = template.cloneNode(true).content;
     var title = card.querySelector('.popup__title');
     var address = card.querySelector('.popup__text--address');
@@ -68,7 +74,7 @@
     close: function () {
       var activeCard = window.map.map.querySelector('.map__card');
       if (activeCard) {
-        map.removeChild(activeCard);
+        window.map.map.removeChild(activeCard);
       }
       document.removeEventListener('keydown', function (evt) {
         window.util.isEscEvent(evt, onDetailsPopUpKeydown);
