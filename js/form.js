@@ -9,12 +9,6 @@
     house: 5000,
     palace: 10000,
   };
-  var houseType = document.querySelector('#type');
-  var timein = document.querySelector('#timein');
-  var timeout = document.querySelector('#timeout');
-  var capacitySelect = document.querySelector('#capacity');
-  var roomNumber = document.querySelector('#room_number');
-  var adForm = document.querySelector('.ad-form');
 
   function onRoomQuantityChange(evt, capacity, bigRoomQuantity, notForGuests) {
     var quantity = evt.target.value;
@@ -48,6 +42,21 @@
     elemToChange.value = activeElem.value;
   }
 
+  function prepareFormInputs(isDisabled) {
+    var fieldsets = adForm.querySelectorAll('fieldset');
+
+    for (var i = 0, len = fieldsets.length; i < len; i++) {
+      fieldsets[i].disabled = isDisabled || false;
+    }
+  }
+
+  var houseType = document.querySelector('#type');
+  var timein = document.querySelector('#timein');
+  var timeout = document.querySelector('#timeout');
+  var capacitySelect = document.querySelector('#capacity');
+  var roomNumber = document.querySelector('#room_number');
+  var adForm = document.querySelector('.ad-form');
+
   roomNumber.addEventListener('change', function (evt) {
     onRoomQuantityChange(evt, capacitySelect, BIG_ROOM_QUANTITY, NOT_FOR_GUESTS);
   });
@@ -60,23 +69,14 @@
   timein.addEventListener('change', onTimeChange);
   timeout.addEventListener('change', onTimeChange);
 
-  window.prepareFormInputs = function (form, isDisabled) {
-    var fieldsets = form.querySelectorAll('fieldset');
-
-    for (var i = 0, len = fieldsets.length; i < len; i++) {
-      fieldsets[i].disabled = isDisabled || false;
-    }
-  };
   window.adForm = {
     enable: function () {
       adForm.classList.remove('ad-form--disabled');
+      prepareFormInputs(false);
     },
-    prepareFormInputs: function (isDisabled) {
-      var fieldsets = adForm.querySelectorAll('fieldset');
-
-      for (var i = 0, len = fieldsets.length; i < len; i++) {
-        fieldsets[i].disabled = isDisabled || false;
-      }
+    disable: function () {
+      adForm.classList.add('ad-form--disabled');
+      prepareFormInputs(true);
     }
   };
 })();

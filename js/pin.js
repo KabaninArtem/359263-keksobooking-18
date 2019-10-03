@@ -9,7 +9,7 @@
   var mapPins = document.querySelector('.map__pins');
   var filtersContainer = document.querySelector('.map__filters-container');
 
-  function onPinEnterPress() {
+  function onPinActivate() {
     window.activatePage(mapPins);
   }
 
@@ -46,10 +46,8 @@
     pinsContainer: mapPins
   };
 
-  mainPin.addEventListener('mousedown', function () {
-    window.activatePage(mapPins);
-  });
+  mainPin.addEventListener('mousedown', onPinActivate);
   mainPin.addEventListener('keydown', function (evt) {
-    window.util.isEnterEvent(evt, onPinEnterPress);
+    window.util.isEnterEvent(evt, onPinActivate);
   });
 })();

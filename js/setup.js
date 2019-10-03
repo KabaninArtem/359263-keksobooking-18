@@ -7,10 +7,9 @@
     window.map.enable();
     window.adForm.enable();
     pinsContainer.appendChild(pins);
-    window.adForm.prepareFormInputs(false);
     window.pin.setAddressOfPin(window.pin.mainPin);
   };
 
-  window.adForm.prepareFormInputs(true);
+  window.adForm.disable();
   window.pin.setAddressOfPin(window.pin.mainPin);
 })();
