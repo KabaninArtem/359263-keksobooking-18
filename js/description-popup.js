@@ -39,14 +39,16 @@
     return card;
   }
 
+  function onPopUpEsc(evt) {
+    window.util.isEscEvent(evt, close);
+  }
+
   function close() {
-    var activeCard = window.map.map.querySelector('.map__card');
+    var activeCard = document.querySelector('.map__card');
     if (activeCard) {
-      window.map.map.removeChild(activeCard);
+      document.querySelector.removeChild(activeCard);
     }
-    document.removeEventListener('keydown', function (evt) {
-      window.util.isEscEvent(evt, close);
-    });
+    document.removeEventListener('keydown', onPopUpEsc);
   }
 
   function createFeatureList(container, features) {
@@ -71,11 +73,12 @@
 
   window.detailsPopUp = {
     open: function (data, filtersContainer) {
+      var map = document.querySelector('.map');
       var template = document.querySelector('#card');
       var card = createDetailsPopUp(template, data);
       var closeButton = card.querySelector('.popup__close');
-      window.map.map.insertBefore(card, filtersContainer);
-      document.addEventListener('keydown', close);
+      map.insertBefore(card, filtersContainer);
+      document.addEventListener('keydown', onPopUpEsc);
       closeButton.addEventListener('click', close);
     },
     close: close

@@ -5,12 +5,9 @@
     width: 65,
     height: 87
   };
-  var mainPin = document.querySelector('.map__pin--main');
-  var mapPins = document.querySelector('.map__pins');
-  var filtersContainer = document.querySelector('.map__filters-container');
 
   function onPinActivate() {
-    window.activatePage(mapPins);
+    window.activatePage();
   }
 
   function createPin(info, template) {
@@ -28,22 +25,34 @@
     return pin;
   }
 
+  function createPins(mocks) {
+    var fragment = document.createDocumentFragment();
+    var template = document.querySelector('#pin');
+    for (var i = 0, len = mocks.length; i < len; i++) {
+      fragment.appendChild(createPin(mocks[i], template));
+    }
+    return fragment;
+  }
+
+  function setPinAddress(pin) {
+    var addressInput = document.querySelector('#address');
+    var position = window.util.getPinPosition(pin, window.PIN_TEMPLATE);
+    addressInput.value = position.x + ', ' + position.y;
+  }
+
+  var mainPin = document.querySelector('.map__pin--main');
+  var filtersContainer = document.querySelector('.map__filters-container');
+
   window.pin = {
-    createPins: function (mocks) {
-      var fragment = document.createDocumentFragment();
-      var template = document.querySelector('#pin');
-      for (var i = 0, len = mocks.length; i < len; i++) {
-        fragment.appendChild(createPin(mocks[i], template));
-      }
-      return fragment;
-    },
-    setAddressOfPin: function (pin) {
-      var addressInput = document.querySelector('#address');
-      var position = window.util.getPinPosition(pin, window.PIN_TEMPLATE);
-      addressInput.value = position.x + ', ' + position.y;
-    },
-    mainPin: mainPin,
-    pinsContainer: mapPins
+    mapEnable: function () {
+      var mapPins = document.querySelector('.map__pins');
+      var mocksList = window.mock.generateMockData(mapPins);
+      var map = document.querySelector('.map');
+      var pins = createPins(mocksList, mapPins);
+      map.classList.remove('map--faded');
+      mapPins.appendChild(pins);
+      setPinAddress(mainPin);
+    }
   };
 
   mainPin.addEventListener('mousedown', onPinActivate);
