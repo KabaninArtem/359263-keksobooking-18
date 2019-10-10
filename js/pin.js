@@ -1,13 +1,15 @@
 'use strict';
 
 (function () {
-  window.PIN_TEMPLATE = {
-    width: 65,
-    height: 87
-  };
+  var isEnterEvent = window.util.isEnterEvent;
+  var getPinPosition = window.util.getPinPosition;
+  var openDetails = window.descriptionPopUp.open;
+  var generateMockData = window.mock.generateMockData;
+  var enableAdForm = window.adForm.enable;
+  var PIN_TEMPLATE = window.mock.PIN_TEMPLATE;
 
   function onPinActivate() {
-    window.activatePage();
+    activatePage();
   }
 
   function createPin(info, template) {
@@ -19,8 +21,7 @@
     pinImg.src = info.author.avatar;
     pinImg.alt = info.offer.title;
     pinButton.addEventListener('click', function () {
-      window.detailsPopUp.close();
-      window.detailsPopUp.open(info, filtersContainer);
+      openDetails(info, filtersContainer);
     });
     return pin;
   }
@@ -36,27 +37,30 @@
 
   function setPinAddress(pin) {
     var addressInput = document.querySelector('#address');
-    var position = window.util.getPinPosition(pin, window.PIN_TEMPLATE);
+    var position = getPinPosition(pin, PIN_TEMPLATE);
     addressInput.value = position.x + ', ' + position.y;
+  }
+
+  function mapEnable() {
+    var mapPins = document.querySelector('.map__pins');
+    var mocksList = generateMockData(mapPins);
+    var map = document.querySelector('.map');
+    var pins = createPins(mocksList, mapPins);
+    map.classList.remove('map--faded');
+    mapPins.appendChild(pins);
+    setPinAddress(mainPin);
+  }
+
+  function activatePage() {
+    mapEnable();
+    enableAdForm();
   }
 
   var mainPin = document.querySelector('.map__pin--main');
   var filtersContainer = document.querySelector('.map__filters-container');
 
-  window.pin = {
-    mapEnable: function () {
-      var mapPins = document.querySelector('.map__pins');
-      var mocksList = window.mock.generateMockData(mapPins);
-      var map = document.querySelector('.map');
-      var pins = createPins(mocksList, mapPins);
-      map.classList.remove('map--faded');
-      mapPins.appendChild(pins);
-      setPinAddress(mainPin);
-    }
-  };
-
   mainPin.addEventListener('mousedown', onPinActivate);
   mainPin.addEventListener('keydown', function (evt) {
-    window.util.isEnterEvent(evt, onPinActivate);
+    isEnterEvent(evt, onPinActivate);
   });
 })();

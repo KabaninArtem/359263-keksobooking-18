@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var isEscEvent = window.util.isEscEvent;
   var FEATURE_CLASS_TEMAPLTE = 'popup__feature--';
   var HUMANIZE_TYPE = {
     bungalo: 'Бунгало',
@@ -22,6 +23,7 @@
     var features = card.querySelector('.popup__features');
     var photos = card.querySelector('.popup__photos');
     var imgTemplate = photos.querySelector('img');
+    var closeButton = card.querySelector('.popup__close');
     title.textContent = data.offer.title;
     address.textContent = data.offer.address;
     price.textContent = data.offer.price + '₽/ночь';
@@ -36,17 +38,18 @@
     features.appendChild(featuresList);
     photos.removeChild(imgTemplate);
     photos.appendChild(photosList);
+    closeButton.addEventListener('click', close);
     return card;
   }
 
   function onPopUpEsc(evt) {
-    window.util.isEscEvent(evt, close);
+    isEscEvent(evt, close);
   }
 
   function close() {
     var activeCard = document.querySelector('.map__card');
     if (activeCard) {
-      document.querySelector.removeChild(activeCard);
+      activeCard.parentElement.removeChild(activeCard);
     }
     document.removeEventListener('keydown', onPopUpEsc);
   }
@@ -71,16 +74,13 @@
     return fragment;
   }
 
-  window.detailsPopUp = {
+  window.descriptionPopUp = {
     open: function (data, filtersContainer) {
-      var map = document.querySelector('.map');
+      close();
       var template = document.querySelector('#card');
       var card = createDetailsPopUp(template, data);
-      var closeButton = card.querySelector('.popup__close');
-      map.insertBefore(card, filtersContainer);
+      filtersContainer.parentElement.insertBefore(card, filtersContainer);
       document.addEventListener('keydown', onPopUpEsc);
-      closeButton.addEventListener('click', close);
-    },
-    close: close
+    }
   };
 })();

@@ -1,6 +1,13 @@
 'use strict';
 
 (function () {
+  var generateRandomValue = window.util.generateRandomValue;
+  var getRandomElemFromArray = window.util.getRandomElemFromArray;
+  var getRandomArray = window.util.getRandomArray;
+  var PIN_TEMPLATE = {
+    width: 65,
+    height: 87
+  };
   var MOCK_QUANTITY = 8;
   var MOCK_INFO = {
     photos: [
@@ -28,25 +35,26 @@
           offer: {
             title: 'title' + i,
             address: '',
-            price: window.util.generateRandomValue(100),
-            type: window.util.getRandomElemFromArray(mockInfo.type),
-            rooms: window.util.generateRandomValue(3, 1),
-            guests: window.util.generateRandomValue(3, 1),
-            checkin: window.util.getRandomElemFromArray(mockInfo.times),
-            checkout: window.util.getRandomElemFromArray(mockInfo.times),
-            features: window.util.getRandomArray(mockInfo.features),
+            price: generateRandomValue(100),
+            type: getRandomElemFromArray(mockInfo.type),
+            rooms: generateRandomValue(3, 1),
+            guests: generateRandomValue(3, 1),
+            checkin: getRandomElemFromArray(mockInfo.times),
+            checkout: getRandomElemFromArray(mockInfo.times),
+            features: getRandomArray(mockInfo.features),
             description: 'description' + i,
-            photos: window.util.getRandomArray(mockInfo.photos),
+            photos: getRandomArray(mockInfo.photos),
           },
           location: {
-            x: window.util.generateRandomValue(mapPosition.right - (window.PIN_TEMPLATE.width / 2), mapPosition.left + (window.PIN_TEMPLATE.width / 2)),
-            y: window.util.generateRandomValue(630, 130),
+            x: generateRandomValue(mapPosition.right - (PIN_TEMPLATE.width / 2), mapPosition.left + (PIN_TEMPLATE.width / 2)),
+            y: generateRandomValue(630, 130),
           }
         };
         mockData.offer.address = mockData.location.x + ', ' + mockData.location.y;
         mocks.push(mockData);
       }
       return mocks;
-    }
+    },
+    PIN_TEMPLATE: PIN_TEMPLATE
   };
 })();
