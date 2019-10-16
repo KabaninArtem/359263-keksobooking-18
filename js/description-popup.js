@@ -74,11 +74,12 @@
     return fragment;
   }
 
+  var cardTemplate = document.querySelector('#card');
+
   window.descriptionPopUp = {
     open: function (data, filtersContainer) {
       close();
-      var template = document.querySelector('#card');
-      var card = createDetailsPopUp(template, data);
+      var card = createDetailsPopUp(cardTemplate, data);
       filtersContainer.parentElement.insertBefore(card, filtersContainer);
       document.addEventListener('keydown', onPopUpEsc);
     }

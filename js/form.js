@@ -50,6 +50,11 @@
     }
   }
 
+  function disableForm() {
+    adForm.classList.add('ad-form--disabled');
+    prepareFormInputs(true);
+  }
+
   var houseType = document.querySelector('#type');
   var timein = document.querySelector('#timein');
   var timeout = document.querySelector('#timeout');
@@ -68,15 +73,13 @@
   });
   timein.addEventListener('change', onTimeChange);
   timeout.addEventListener('change', onTimeChange);
+  disableForm();
 
   window.adForm = {
     enable: function () {
       adForm.classList.remove('ad-form--disabled');
       prepareFormInputs(false);
-    },
-    disable: function () {
-      adForm.classList.add('ad-form--disabled');
-      prepareFormInputs(true);
     }
   };
+
 })();
