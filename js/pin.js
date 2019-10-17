@@ -4,9 +4,10 @@
   var isEnterEvent = window.util.isEnterEvent;
   var getPinPosition = window.util.getPinPosition;
   var openDetails = window.descriptionPopUp.open;
-  var generateMockData = window.mock.generateMockData;
   var enableAdForm = window.adForm.enable;
+  var getDataFromServer = window.getDataFromServer;
   var PIN_TEMPLATE = window.mock.PIN_TEMPLATE;
+  var GET_ADS_URL = 'https://js.dump.academy/keksobooking/data';
 
   function onPinActivate(evt) {
     if (!isActive) {
@@ -84,12 +85,9 @@
   }
 
   function mapEnable() {
-    var mapPins = document.querySelector('.map__pins');
-    var mocksList = generateMockData(mapPins);
+    getDataFromServer(GET_ADS_URL, successHandler, errorHandler);
     var map = document.querySelector('.map');
-    var pins = createPins(mocksList, mapPins);
     map.classList.remove('map--faded');
-    mapPins.appendChild(pins);
     setPinAddress(mainPin);
   }
 
@@ -97,6 +95,48 @@
     mapEnable();
     enableAdForm();
     isActive = true;
+  }
+
+  function successHandler(data) {
+    var mapPins = document.querySelector('.map__pins');
+    var pins = createPins(data, mapPins);
+    mapPins.appendChild(pins);
+  }
+
+  function tryAgainSuccessHandler(data) {
+    var errorWindow = document.querySelector('.error');
+    errorWindow.parentElement.removeChild(errorWindow);
+    successHandler(data);
+  }
+
+  function errorHandler(errorMessage) {
+    var error = createErrorMessage(errorMessage);
+    var main = document.querySelector('main');
+    main.appendChild(error);
+  }
+
+  function tryAgainErrorHandler(errorMessage) {
+    var errorWindow = document.querySelector('.error');
+    updateErrorMessage(errorWindow, errorMessage);
+  }
+
+  function createErrorMessage(errorMessage) {
+    var errorTemplate = document.querySelector('#error');
+    var errorELem = errorTemplate.cloneNode(true).content;
+    var tryAgain = errorELem.querySelector('.error__button');
+    updateErrorMessage(errorELem, errorMessage);
+
+    tryAgain.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      getDataFromServer(GET_ADS_URL, tryAgainSuccessHandler, tryAgainErrorHandler);
+    });
+
+    return errorELem;
+  }
+
+  function updateErrorMessage(container, message) {
+    var errorMsgElem = container.querySelector('.error__message');
+    errorMsgElem.textContent = message;
   }
 
   var mainPin = document.querySelector('.map__pin--main');
