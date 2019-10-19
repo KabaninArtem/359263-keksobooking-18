@@ -2,11 +2,13 @@
 
 (function () {
   var isEnterEvent = window.util.isEnterEvent;
-  var getPinPosition = window.util.getPinPosition;
   var openDetails = window.descriptionPopUp.open;
   var enableAdForm = window.adForm.enable;
-  var getDataFromServer = window.getDataFromServer;
-  var PIN_TEMPLATE = window.mock.PIN_TEMPLATE;
+  var setPinAddress = window.adForm.setPinAddress;
+  var createError = window.xhr.createError;
+  var updateErrorMessage = window.xhr.updateErrorMessage;
+  var closeOverlay = window.xhr.closeOverlay;
+  var getDataFromServer = window.xhr.getDataFromServer;
   var GET_ADS_URL = 'https://js.dump.academy/keksobooking/data';
 
   function onPinActivate(evt) {
@@ -78,14 +80,8 @@
     return fragment;
   }
 
-  function setPinAddress(pin) {
-    var addressInput = document.querySelector('#address');
-    var position = getPinPosition(pin, PIN_TEMPLATE);
-    addressInput.value = position.x + ', ' + position.y;
-  }
-
   function mapEnable() {
-    getDataFromServer(GET_ADS_URL, successHandler, errorHandler);
+    getDataFromServer(GET_ADS_URL, onSuccess, onError);
     var map = document.querySelector('.map');
     map.classList.remove('map--faded');
     setPinAddress(mainPin);
@@ -97,46 +93,20 @@
     isActive = true;
   }
 
-  function successHandler(data) {
+  function onSuccess(data) {
     var mapPins = document.querySelector('.map__pins');
     var pins = createPins(data, mapPins);
     mapPins.appendChild(pins);
   }
 
   function tryAgainSuccessHandler(data) {
-    var errorWindow = document.querySelector('.error');
-    errorWindow.parentElement.removeChild(errorWindow);
-    successHandler(data);
+    onSuccess(data);
+    closeOverlay();
   }
 
-  function errorHandler(errorMessage) {
-    var error = createErrorMessage(errorMessage);
-    var main = document.querySelector('main');
-    main.appendChild(error);
-  }
-
-  function tryAgainErrorHandler(errorMessage) {
-    var errorWindow = document.querySelector('.error');
-    updateErrorMessage(errorWindow, errorMessage);
-  }
-
-  function createErrorMessage(errorMessage) {
-    var errorTemplate = document.querySelector('#error');
-    var errorELem = errorTemplate.cloneNode(true).content;
-    var tryAgain = errorELem.querySelector('.error__button');
-    updateErrorMessage(errorELem, errorMessage);
-
-    tryAgain.addEventListener('click', function (evt) {
-      evt.preventDefault();
-      getDataFromServer(GET_ADS_URL, tryAgainSuccessHandler, tryAgainErrorHandler);
-    });
-
-    return errorELem;
-  }
-
-  function updateErrorMessage(container, message) {
-    var errorMsgElem = container.querySelector('.error__message');
-    errorMsgElem.textContent = message;
+  function onError(errorMessage) {
+    var message = createError(errorMessage, GET_ADS_URL, tryAgainSuccessHandler, updateErrorMessage);
+    document.body.appendChild(message);
   }
 
   var mainPin = document.querySelector('.map__pin--main');

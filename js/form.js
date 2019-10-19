@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+  var getPinPosition = window.util.getPinPosition;
+  var createError = window.xhr.createError;
+  var updateErrorMessage = window.xhr.updateErrorMessage;
+  var createOverlayMessage = window.xhr.createOverlayMessage;
+  var PIN_TEMPLATE = window.mock.PIN_TEMPLATE;
   var BIG_ROOM_QUANTITY = '100';
   var NOT_FOR_GUESTS = '0';
   var PRICES = {
@@ -9,6 +14,7 @@
     house: 5000,
     palace: 10000,
   };
+  var URL = 'https://js.dump.academy/keksobooking';
 
   function onRoomQuantityChange(evt, capacity, bigRoomQuantity, notForGuests) {
     var quantity = evt.target.value;
@@ -55,12 +61,56 @@
     prepareFormInputs(true);
   }
 
+  function sendFormData() {
+    window.xhr.sendDataToServer(URL, new FormData(adForm), onSuccess, onError);
+  }
+
+  function savePinState(pin) {
+    pinPosition['top'] = pin.style.top;
+    pinPosition['left'] = pin.style.left;
+  }
+
+  function restorePinPosition(pin) {
+    pin.style.top = pinPosition['top'];
+    pin.style.left = pinPosition['left'];
+  }
+
+  function setPinAddress(pin) {
+    var addressInput = document.querySelector('#address');
+    var position = getPinPosition(pin, PIN_TEMPLATE);
+    addressInput.value = position.x + ', ' + position.y;
+  }
+
+  function onError(errorMessage) {
+    var message = createError(errorMessage, URL, onSuccess, updateErrorMessage);
+    document.body.appendChild(message);
+  }
+
+  function onSuccess() {
+    var message = createOverlayMessage('success');
+    document.body.appendChild(message);
+    adForm.reset();
+    removePins();
+    restorePinPosition(pin);
+    setPinAddress(pin);
+  }
+
+  function removePins() {
+    var mapPins = document.querySelector('.map__pins');
+    var pins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+    for (var i = 0, length = pins.length; i < length; i++) {
+      mapPins.removeChild(pins[i]);
+    }
+  }
+
   var houseType = document.querySelector('#type');
   var timein = document.querySelector('#timein');
   var timeout = document.querySelector('#timeout');
   var capacitySelect = document.querySelector('#capacity');
   var roomNumber = document.querySelector('#room_number');
   var adForm = document.querySelector('.ad-form');
+  var pin = document.querySelector('.map__pin--main');
+  var pinPosition = {};
 
   roomNumber.addEventListener('change', function (evt) {
     onRoomQuantityChange(evt, capacitySelect, BIG_ROOM_QUANTITY, NOT_FOR_GUESTS);
@@ -73,13 +123,19 @@
   });
   timein.addEventListener('change', onTimeChange);
   timeout.addEventListener('change', onTimeChange);
-  disableForm();
+  adForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    sendFormData();
+  });
 
+  disableForm();
   window.adForm = {
     enable: function () {
       adForm.classList.remove('ad-form--disabled');
       prepareFormInputs(false);
-    }
+      savePinState(pin);
+    },
+    setPinAddress: setPinAddress
   };
 
 })();
