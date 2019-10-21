@@ -4,11 +4,6 @@
   var ENTER_KEYCODE = 13;
   var ESC_KEYCODE = 27;
 
-  function generateRandomValue(max, min) {
-    min = min || 0;
-    return Math.floor(min + Math.random() * (max - min));
-  }
-
   window.util = {
     isEscEvent: function isEscEvent(evt, action) {
       if (evt.keyCode === ESC_KEYCODE) {
@@ -26,12 +21,5 @@
         y: Math.floor(pin.offsetTop + template.height),
       };
     },
-    generateRandomValue: generateRandomValue,
-    getRandomArray: function (array) {
-      return array.slice(0, generateRandomValue(array.length));
-    },
-    getRandomElemFromArray: function (array) {
-      return array[generateRandomValue(array.length)];
-    }
   };
 })();

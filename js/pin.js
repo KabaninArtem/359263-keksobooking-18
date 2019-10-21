@@ -5,9 +5,9 @@
   var openDetails = window.descriptionPopUp.open;
   var enableAdForm = window.adForm.enable;
   var setPinAddress = window.adForm.setPinAddress;
-  var createError = window.xhr.createError;
-  var updateErrorMessage = window.xhr.updateErrorMessage;
-  var closeOverlay = window.xhr.closeOverlay;
+  var createError = window.requestStatus.createError;
+  var updateErrorMessage = window.requestStatus.updateErrorMessage;
+  var closeOverlay = window.requestStatus.closeOverlay;
   var getDataFromServer = window.xhr.getDataFromServer;
   var GET_ADS_URL = 'https://js.dump.academy/keksobooking/data';
 

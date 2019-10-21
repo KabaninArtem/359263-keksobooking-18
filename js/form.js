@@ -2,10 +2,13 @@
 
 (function () {
   var getPinPosition = window.util.getPinPosition;
-  var createError = window.xhr.createError;
-  var updateErrorMessage = window.xhr.updateErrorMessage;
-  var createOverlayMessage = window.xhr.createOverlayMessage;
-  var PIN_TEMPLATE = window.mock.PIN_TEMPLATE;
+  var createError = window.requestStatus.createError;
+  var updateErrorMessage = window.requestStatus.updateErrorMessage;
+  var createOverlayMessage = window.requestStatus.createOverlayMessage;
+  var PIN_TEMPLATE = {
+    width: 65,
+    height: 87
+  };
   var BIG_ROOM_QUANTITY = '100';
   var NOT_FOR_GUESTS = '0';
   var PRICES = {
