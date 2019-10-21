@@ -53,5 +53,5 @@
     updateErrorMessage: updateErrorMessage,
     createOverlayMessage: createOverlayMessage,
     closeOverlay: closeOverlay,
-  }
+  };
 })();
