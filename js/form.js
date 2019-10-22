@@ -1,6 +1,13 @@
 'use strict';
 
 (function () {
+  var setPinAddress = window.pin.setAddress;
+  var setActivateListeners = window.pin.setActivateListeners;
+  var restorePinPosition = window.pin.restorePinPosition;
+  var createError = window.requestStatus.createError;
+  var prepareFormInputs = window.util.prepareFormInputs;
+  var updateErrorMessage = window.requestStatus.updateErrorMessage;
+  var createOverlayMessage = window.requestStatus.createOverlayMessage;
   var BIG_ROOM_QUANTITY = '100';
   var NOT_FOR_GUESTS = '0';
   var PRICES = {
@@ -9,6 +16,7 @@
     house: 5000,
     palace: 10000,
   };
+  var URL = 'https://js.dump.academy/keksobooking';
 
   function onRoomQuantityChange(evt, capacity, bigRoomQuantity, notForGuests) {
     var quantity = evt.target.value;
@@ -42,17 +50,57 @@
     elemToChange.value = activeElem.value;
   }
 
-  function prepareFormInputs(isDisabled) {
-    var fieldsets = adForm.querySelectorAll('fieldset');
+  function disableForm() {
+    adForm.classList.add('ad-form--disabled');
+    prepareFormInputs(adForm, true);
+  }
 
-    for (var i = 0, len = fieldsets.length; i < len; i++) {
-      fieldsets[i].disabled = isDisabled || false;
+  function sendFormData(successHandler, errorHandler) {
+    window.xhr.sendDataToServer(URL, new FormData(adForm), successHandler, errorHandler);
+  }
+
+  function onError(errorMessage) {
+    var messageElem = createOverlayMessage('error');
+    createError(messageElem, errorMessage, sendFormDataAgain);
+
+    function sendFormDataAgain() {
+      sendFormData(onAgainSuccess, onAgainError);
+    }
+    function onAgainSuccess() {
+      document.removeChild(messageElem);
+      onSuccess();
+    }
+
+    function onAgainError(err) {
+      updateErrorMessage(messageElem, err);
+    }
+
+    document.body.appendChild(messageElem);
+  }
+
+  function onSuccess() {
+    var message = createOverlayMessage('success');
+    document.body.appendChild(message);
+    adForm.reset();
+    disableForm();
+    mapDisable();
+    removePins();
+    restorePinPosition(pin);
+    setPinAddress(pin);
+    setActivateListeners();
+  }
+
+  function removePins() {
+    var mapPins = document.querySelector('.map__pins');
+    var pins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+    for (var i = 0, length = pins.length; i < length; i++) {
+      mapPins.removeChild(pins[i]);
     }
   }
 
-  function disableForm() {
-    adForm.classList.add('ad-form--disabled');
-    prepareFormInputs(true);
+  function mapDisable() {
+    var map = document.querySelector('.map');
+    map.classList.add('map--faded');
   }
 
   var houseType = document.querySelector('#type');
@@ -61,6 +109,7 @@
   var capacitySelect = document.querySelector('#capacity');
   var roomNumber = document.querySelector('#room_number');
   var adForm = document.querySelector('.ad-form');
+  var pin = document.querySelector('.map__pin--main');
 
   roomNumber.addEventListener('change', function (evt) {
     onRoomQuantityChange(evt, capacitySelect, BIG_ROOM_QUANTITY, NOT_FOR_GUESTS);
@@ -73,13 +122,10 @@
   });
   timein.addEventListener('change', onTimeChange);
   timeout.addEventListener('change', onTimeChange);
+  adForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    sendFormData(onSuccess, onError);
+  });
+
   disableForm();
-
-  window.adForm = {
-    enable: function () {
-      adForm.classList.remove('ad-form--disabled');
-      prepareFormInputs(false);
-    }
-  };
-
 })();
