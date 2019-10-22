@@ -7,7 +7,7 @@
   var setPinAddress = window.adForm.setPinAddress;
   var createError = window.requestStatus.createError;
   var updateErrorMessage = window.requestStatus.updateErrorMessage;
-  var closeOverlay = window.requestStatus.closeOverlay;
+  var createOverlayMessage = window.requestStatus.createOverlayMessage;
   var getDataFromServer = window.xhr.getDataFromServer;
   var GET_ADS_URL = 'https://js.dump.academy/keksobooking/data';
 
@@ -80,8 +80,12 @@
     return fragment;
   }
 
+  function getPinData(successHandler, errorHandler) {
+    getDataFromServer(GET_ADS_URL, successHandler, errorHandler);
+  }
+
   function mapEnable() {
-    getDataFromServer(GET_ADS_URL, onSuccess, onError);
+    getPinData(onSuccess, onError);
     var map = document.querySelector('.map');
     map.classList.remove('map--faded');
     setPinAddress(mainPin);
@@ -99,14 +103,24 @@
     mapPins.appendChild(pins);
   }
 
-  function tryAgainSuccessHandler(data) {
-    onSuccess(data);
-    closeOverlay();
-  }
-
   function onError(errorMessage) {
-    var message = createError(errorMessage, GET_ADS_URL, tryAgainSuccessHandler, updateErrorMessage);
-    document.body.appendChild(message);
+    var overlayElem = createOverlayMessage('error');
+    createError(overlayElem, errorMessage, againServerRequest);
+
+    function againServerRequest() {
+      getPinData(onAgainSuccess, onAgainError);
+    }
+
+    function onAgainSuccess(data) {
+      onSuccess(data);
+      document.body.removeChild(overlayElem);
+    }
+
+    function onAgainError(error) {
+      updateErrorMessage(overlayElem, error);
+    }
+
+    document.body.appendChild(overlayElem);
   }
 
   var mainPin = document.querySelector('.map__pin--main');

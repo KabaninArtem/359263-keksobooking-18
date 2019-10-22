@@ -64,8 +64,8 @@
     prepareFormInputs(true);
   }
 
-  function sendFormData() {
-    window.xhr.sendDataToServer(URL, new FormData(adForm), onSuccess, onError);
+  function sendFormData(successHandler, errorHandler) {
+    window.xhr.sendDataToServer(URL, new FormData(adForm), successHandler, errorHandler);
   }
 
   function savePinState(pin) {
@@ -85,8 +85,22 @@
   }
 
   function onError(errorMessage) {
-    var message = createError(errorMessage, URL, onSuccess, updateErrorMessage);
-    document.body.appendChild(message);
+    var messageElem = createOverlayMessage('error');
+    createError(messageElem, errorMessage, sendFormDataAgain);
+
+    function sendFormDataAgain() {
+      sendFormData(onAgainSuccess, onAgainError);
+    }
+    function onAgainSuccess() {
+      document.removeChild(messageElem);
+      onSuccess();
+    }
+
+    function onAgainError(err) {
+      updateErrorMessage(messageElem, err);
+    }
+
+    document.body.appendChild(messageElem);
   }
 
   function onSuccess() {
@@ -128,7 +142,7 @@
   timeout.addEventListener('change', onTimeChange);
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    sendFormData();
+    sendFormData(onSuccess, onError);
   });
 
   disableForm();
