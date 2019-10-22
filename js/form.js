@@ -1,14 +1,13 @@
 'use strict';
 
 (function () {
-  var getPinPosition = window.util.getPinPosition;
+  var setPinAddress = window.pin.setAddress;
+  var setActivateListeners = window.pin.setActivateListeners;
+  var restorePinPosition = window.pin.restorePinPosition;
   var createError = window.requestStatus.createError;
+  var prepareFormInputs = window.util.prepareFormInputs;
   var updateErrorMessage = window.requestStatus.updateErrorMessage;
   var createOverlayMessage = window.requestStatus.createOverlayMessage;
-  var PIN_TEMPLATE = {
-    width: 65,
-    height: 87
-  };
   var BIG_ROOM_QUANTITY = '100';
   var NOT_FOR_GUESTS = '0';
   var PRICES = {
@@ -51,37 +50,13 @@
     elemToChange.value = activeElem.value;
   }
 
-  function prepareFormInputs(isDisabled) {
-    var fieldsets = adForm.querySelectorAll('fieldset');
-
-    for (var i = 0, len = fieldsets.length; i < len; i++) {
-      fieldsets[i].disabled = isDisabled || false;
-    }
-  }
-
   function disableForm() {
     adForm.classList.add('ad-form--disabled');
-    prepareFormInputs(true);
+    prepareFormInputs(adForm, true);
   }
 
   function sendFormData(successHandler, errorHandler) {
     window.xhr.sendDataToServer(URL, new FormData(adForm), successHandler, errorHandler);
-  }
-
-  function savePinState(pin) {
-    pinPosition['top'] = pin.style.top;
-    pinPosition['left'] = pin.style.left;
-  }
-
-  function restorePinPosition(pin) {
-    pin.style.top = pinPosition['top'];
-    pin.style.left = pinPosition['left'];
-  }
-
-  function setPinAddress(pin) {
-    var addressInput = document.querySelector('#address');
-    var position = getPinPosition(pin, PIN_TEMPLATE);
-    addressInput.value = position.x + ', ' + position.y;
   }
 
   function onError(errorMessage) {
@@ -107,9 +82,12 @@
     var message = createOverlayMessage('success');
     document.body.appendChild(message);
     adForm.reset();
+    disableForm();
+    mapDisable();
     removePins();
     restorePinPosition(pin);
     setPinAddress(pin);
+    setActivateListeners();
   }
 
   function removePins() {
@@ -120,6 +98,11 @@
     }
   }
 
+  function mapDisable() {
+    var map = document.querySelector('.map');
+    map.classList.add('map--faded');
+  }
+
   var houseType = document.querySelector('#type');
   var timein = document.querySelector('#timein');
   var timeout = document.querySelector('#timeout');
@@ -127,7 +110,6 @@
   var roomNumber = document.querySelector('#room_number');
   var adForm = document.querySelector('.ad-form');
   var pin = document.querySelector('.map__pin--main');
-  var pinPosition = {};
 
   roomNumber.addEventListener('change', function (evt) {
     onRoomQuantityChange(evt, capacitySelect, BIG_ROOM_QUANTITY, NOT_FOR_GUESTS);
@@ -146,13 +128,4 @@
   });
 
   disableForm();
-  window.adForm = {
-    enable: function () {
-      adForm.classList.remove('ad-form--disabled');
-      prepareFormInputs(false);
-      savePinState(pin);
-    },
-    setPinAddress: setPinAddress
-  };
-
 })();

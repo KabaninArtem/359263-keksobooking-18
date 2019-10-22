@@ -2,14 +2,19 @@
 
 (function () {
   var isEnterEvent = window.util.isEnterEvent;
+  var prepareFormInputs = window.util.prepareFormInputs;
+  var getPinPosition = window.util.getPinPosition;
   var openDetails = window.descriptionPopUp.open;
-  var enableAdForm = window.adForm.enable;
-  var setPinAddress = window.adForm.setPinAddress;
   var createError = window.requestStatus.createError;
   var updateErrorMessage = window.requestStatus.updateErrorMessage;
   var createOverlayMessage = window.requestStatus.createOverlayMessage;
   var getDataFromServer = window.xhr.getDataFromServer;
+  var pinPosition = {};
   var GET_ADS_URL = 'https://js.dump.academy/keksobooking/data';
+  var PIN_TEMPLATE = {
+    width: 65,
+    height: 87
+  };
 
   function onPinActivate(evt) {
     if (!isActive) {
@@ -84,6 +89,16 @@
     getDataFromServer(GET_ADS_URL, successHandler, errorHandler);
   }
 
+  function savePinState(pin) {
+    pinPosition['top'] = pin.style.top;
+    pinPosition['left'] = pin.style.left;
+  }
+
+  function restorePinPosition(pin) {
+    pin.style.top = pinPosition['top'];
+    pin.style.left = pinPosition['left'];
+  }
+
   function mapEnable() {
     getPinData(onSuccess, onError);
     var map = document.querySelector('.map');
@@ -91,9 +106,16 @@
     setPinAddress(mainPin);
   }
 
+  function formEnable() {
+    var adForm = document.querySelector('.ad-form');
+    adForm.classList.remove('ad-form--disabled');
+    prepareFormInputs(adForm, false);
+    savePinState(mainPin);
+  }
+
   function activatePage() {
     mapEnable();
-    enableAdForm();
+    formEnable();
     isActive = true;
   }
 
@@ -123,6 +145,12 @@
     document.body.appendChild(overlayElem);
   }
 
+  function setPinAddress(pin) {
+    var addressInput = document.querySelector('#address');
+    var position = getPinPosition(pin, PIN_TEMPLATE);
+    addressInput.value = position.x + ', ' + position.y;
+  }
+
   var mainPin = document.querySelector('.map__pin--main');
   var filtersContainer = document.querySelector('.map__filters-container');
   var isActive = false;
@@ -133,8 +161,18 @@
     maxX: mainPin.parentElement.offsetWidth - mainPin.offsetWidth
   };
 
-  mainPin.addEventListener('mousedown', onPinActivate);
-  mainPin.addEventListener('keydown', function (evt) {
-    isEnterEvent(evt, onPinActivate);
-  });
+  function setActivateListeners() {
+    isActive = false;
+    mainPin.addEventListener('mousedown', onPinActivate);
+    mainPin.addEventListener('keydown', function (evt) {
+      isEnterEvent(evt, onPinActivate);
+    });
+  }
+
+  setActivateListeners();
+  window.pin = {
+    setAddress: setPinAddress,
+    restorePinPosition: restorePinPosition,
+    setActivateListeners: setActivateListeners,
+  };
 })();
