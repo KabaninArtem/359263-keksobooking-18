@@ -2,7 +2,6 @@
 
 (function () {
   var isEscEvent = window.util.isEscEvent;
-  var getDataFromServer = window.xhr.getDataFromServer;
 
   function getOverlayTemplate(status) {
     var template = document.querySelector('#' + status).content.cloneNode(true);
