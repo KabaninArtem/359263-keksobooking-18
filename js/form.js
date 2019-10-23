@@ -128,4 +128,8 @@
   });
 
   disableForm();
+
+  window.adForm = {
+    removePins: removePins
+  };
 })();
