@@ -15,6 +15,7 @@
     width: 65,
     height: 87
   };
+  var MAX_PINS_QUANTITY = 5;
 
   function onPinActivate(evt) {
     if (!isActive) {
@@ -85,6 +86,14 @@
     return fragment;
   }
 
+  function renderPins(croppedPinsList) {
+    if (croppedPinsList.length) {
+      var mapPins = document.querySelector('.map__pins');
+      var pins = createPins(croppedPinsList, mapPins);
+      mapPins.appendChild(pins);
+    }
+  }
+
   function getPinData(successHandler, errorHandler) {
     getDataFromServer(GET_ADS_URL, successHandler, errorHandler);
   }
@@ -119,10 +128,14 @@
     isActive = true;
   }
 
+  function cropData(pinsData, length) {
+    return pinsData.slice(0, length);
+  }
+
   function onSuccess(data) {
-    var mapPins = document.querySelector('.map__pins');
-    var pins = createPins(data, mapPins);
-    mapPins.appendChild(pins);
+    window.pin.originalData = data;
+    var croppedPinsList = cropData(data, MAX_PINS_QUANTITY);
+    renderPins(croppedPinsList);
   }
 
   function onError(errorMessage) {
@@ -174,5 +187,7 @@
     setAddress: setPinAddress,
     restorePinPosition: restorePinPosition,
     setActivateListeners: setActivateListeners,
+    render: renderPins,
+    originalData: [],
   };
 })();
