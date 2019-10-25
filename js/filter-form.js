@@ -13,7 +13,7 @@
     renderPins(newPins);
   }
 
-  function filterPins() {
+  function onFilterChange() {
     var originalData = cropData(window.pin.originalData);
     var houseTypeValue = housingType.value;
     var priceValue = price.value;
@@ -24,11 +24,7 @@
     filtered = priceValue !== 'any' ? priceFilter(priceValue, filtered) : filtered;
     filtered = roomsValue !== 'any' ? filterConstructor('rooms', +roomsValue, filtered) : filtered;
     filtered = guestsValue !== 'any' ? filterConstructor('guests', +guestsValue, filtered) : filtered;
-    debounce(replacePins(filtered));
-  }
-
-  function onFilterChange() {
-    filterPins();
+    replacePins(filtered);
   }
 
   function filterConstructor(filterField, filterName, pins) {
@@ -63,8 +59,8 @@
   var guests = form.querySelector('#housing-guests');
   var filtered = [];
 
-  housingType.addEventListener('change', onFilterChange);
-  price.addEventListener('change', onFilterChange);
-  rooms.addEventListener('change', onFilterChange);
-  guests.addEventListener('change', onFilterChange);
+  housingType.addEventListener('change', debounce(onFilterChange));
+  price.addEventListener('change', debounce(onFilterChange));
+  rooms.addEventListener('change', debounce(onFilterChange));
+  guests.addEventListener('change', debounce(onFilterChange));
 })();
