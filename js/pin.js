@@ -129,12 +129,13 @@
   }
 
   function cropData(pinsData, length) {
+    length = length || MAX_PINS_QUANTITY;
     return pinsData.slice(0, length);
   }
 
   function onSuccess(data) {
     window.pin.originalData = data;
-    var croppedPinsList = cropData(data, MAX_PINS_QUANTITY);
+    var croppedPinsList = cropData(data);
     renderPins(croppedPinsList);
   }
 
@@ -188,6 +189,7 @@
     restorePinPosition: restorePinPosition,
     setActivateListeners: setActivateListeners,
     render: renderPins,
+    cropData: cropData,
     originalData: [],
   };
 })();
