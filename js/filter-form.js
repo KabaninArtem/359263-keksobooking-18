@@ -24,11 +24,11 @@
     filtered = priceValue !== 'any' ? priceFilter(priceValue, filtered) : filtered;
     filtered = roomsValue !== 'any' ? filterConstructor('rooms', +roomsValue, filtered) : filtered;
     filtered = guestsValue !== 'any' ? filterConstructor('guests', +guestsValue, filtered) : filtered;
-    replacePins(filtered);
+    debounce(replacePins(filtered));
   }
 
   function onFilterChange() {
-    debounce(filterPins());
+    filterPins();
   }
 
   function filterConstructor(filterField, filterName, pins) {
