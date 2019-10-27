@@ -55,8 +55,8 @@
     prepareFormInputs(adForm, true);
   }
 
-  function sendFormData(successHandler, errorHandler) {
-    window.xhr.sendDataToServer(URL, new FormData(adForm), successHandler, errorHandler);
+  function sendFormData(success, error) {
+    window.xhr.sendDataToServer(URL, new FormData(adForm), success, error);
   }
 
   function onError(errorMessage) {

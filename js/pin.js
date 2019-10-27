@@ -94,8 +94,8 @@
     }
   }
 
-  function getPinData(successHandler, errorHandler) {
-    getDataFromServer(GET_ADS_URL, successHandler, errorHandler);
+  function getPinData(success, error) {
+    getDataFromServer(GET_ADS_URL, success, error);
   }
 
   function savePinState(pin) {

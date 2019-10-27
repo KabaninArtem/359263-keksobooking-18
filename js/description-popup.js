@@ -82,6 +82,7 @@
       var card = createDetailsPopUp(cardTemplate, data);
       filtersContainer.parentElement.insertBefore(card, filtersContainer);
       document.addEventListener('keydown', onPopUpEsc);
-    }
+    },
+    close: close
   };
 })();
