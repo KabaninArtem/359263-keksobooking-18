@@ -8,6 +8,7 @@
   var removePins = window.adForm.removePins;
   var closeDescription = window.descriptionPopUp.close;
   var debounce = window.debounce;
+  var prepareFormInputs = window.util.prepareFormInputs;
 
   function replacePins(newPins) {
     removePins();
@@ -65,4 +66,6 @@
   price.addEventListener('change', debounce(onFilterChange));
   rooms.addEventListener('change', debounce(onFilterChange));
   guests.addEventListener('change', debounce(onFilterChange));
+
+  prepareFormInputs(form, true);
 })();

@@ -6,10 +6,10 @@
 
   window.util = {
     prepareFormInputs: function (form, isDisabled) {
-      var fieldsets = form.querySelectorAll('fieldset');
+      var children = form.children;
 
-      for (var i = 0, len = fieldsets.length; i < len; i++) {
-        fieldsets[i].disabled = isDisabled || false;
+      for (var i = 0, len = children.length; i < len; i++) {
+        children[i].disabled = isDisabled || false;
       }
     },
     isEscEvent: function isEscEvent(evt, action) {
