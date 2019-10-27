@@ -128,7 +128,6 @@
   function activatePage() {
     mapEnable();
     formEnable();
-    prepareFormInputs(filtersForm, false);
     isActive = true;
   }
 
@@ -140,7 +139,7 @@
   function onSuccess(data) {
     window.pin.originalData = data;
     var croppedPinsList = cropData(data);
-
+    prepareFormInputs(filtersForm, false);
     renderPins(croppedPinsList);
   }
 
