@@ -29,8 +29,8 @@
     address.textContent = data.offer.address || '';
     price.textContent = data.offer.price + '₽/ночь' || '';
     type.textContent = HUMANIZE_TYPE[data.offer.type] || '';
-    capicity.textContent = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей' || '';
-    time.textContent = 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout || '';
+    capicity.textContent = data.offer.rooms && data.offer.guests ? data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей' : '';
+    time.textContent = data.offer.checkin && data.offer.checkout ? 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout : '';
     description.textContent = data.offer.description || '';
     avatar.src = data.author.avatar || '';
     var featuresList = data.offer.features.length ? createFeatureList(features, data.offer.features) : [];

@@ -9,6 +9,7 @@
   var updateErrorMessage = window.requestStatus.updateErrorMessage;
   var createOverlayMessage = window.requestStatus.createOverlayMessage;
   var closePopUp = window.window.descriptionPopUp.close;
+  var sendDataToServer = window.xhr.sendDataToServer;
   var BIG_ROOM_QUANTITY = '100';
   var NOT_FOR_GUESTS = '0';
   var PRICES = {
@@ -57,7 +58,7 @@
   }
 
   function sendFormData(success, error) {
-    window.xhr.sendDataToServer(URL, new FormData(adForm), success, error);
+    sendDataToServer(URL, new FormData(adForm), success, error);
   }
 
   function onError(errorMessage) {
