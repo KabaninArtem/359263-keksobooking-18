@@ -8,6 +8,8 @@
   var prepareFormInputs = window.util.prepareFormInputs;
   var updateErrorMessage = window.requestStatus.updateErrorMessage;
   var createOverlayMessage = window.requestStatus.createOverlayMessage;
+  var closePopUp = window.window.descriptionPopUp.close;
+  var sendDataToServer = window.xhr.sendDataToServer;
   var BIG_ROOM_QUANTITY = '100';
   var NOT_FOR_GUESTS = '0';
   var PRICES = {
@@ -55,8 +57,8 @@
     prepareFormInputs(adForm, true);
   }
 
-  function sendFormData(successHandler, errorHandler) {
-    window.xhr.sendDataToServer(URL, new FormData(adForm), successHandler, errorHandler);
+  function sendFormData(success, error) {
+    sendDataToServer(URL, new FormData(adForm), success, error);
   }
 
   function onError(errorMessage) {
@@ -81,13 +83,7 @@
   function onSuccess() {
     var message = createOverlayMessage('success');
     document.body.appendChild(message);
-    adForm.reset();
-    disableForm();
-    mapDisable();
-    removePins();
-    restorePinPosition(pin);
-    setPinAddress(pin);
-    setActivateListeners();
+    customFormReset();
   }
 
   function removePins() {
@@ -103,12 +99,27 @@
     map.classList.add('map--faded');
   }
 
+  function customFormReset() {
+    closePopUp();
+    adForm.reset();
+    filtersForm.reset();
+    prepareFormInputs(filtersForm, false);
+    disableForm();
+    mapDisable();
+    removePins();
+    restorePinPosition(pin);
+    setPinAddress(pin);
+    setActivateListeners();
+  }
+
   var houseType = document.querySelector('#type');
   var timein = document.querySelector('#timein');
   var timeout = document.querySelector('#timeout');
   var capacitySelect = document.querySelector('#capacity');
   var roomNumber = document.querySelector('#room_number');
   var adForm = document.querySelector('.ad-form');
+  var adFormReset = document.querySelector('.ad-form__reset');
+  var filtersForm = document.querySelector('.map__filters');
   var pin = document.querySelector('.map__pin--main');
 
   roomNumber.addEventListener('change', function (evt) {
@@ -125,6 +136,11 @@
   adForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
     sendFormData(onSuccess, onError);
+  });
+
+  adFormReset.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    customFormReset();
   });
 
   disableForm();

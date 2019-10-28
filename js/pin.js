@@ -73,15 +73,18 @@
     pinImg.alt = info.offer.title;
     pinButton.addEventListener('click', function () {
       openDetails(info, filtersContainer);
+      pinButton.classList.add('map__pin--active');
     });
     return pin;
   }
 
-  function createPins(mocks) {
+  function createPins(pinsData) {
     var fragment = document.createDocumentFragment();
     var template = document.querySelector('#pin');
-    for (var i = 0, len = mocks.length; i < len; i++) {
-      fragment.appendChild(createPin(mocks[i], template));
+    for (var i = 0, len = pinsData.length; i < len; i++) {
+      if (pinsData[i].offer) {
+        fragment.appendChild(createPin(pinsData[i], template));
+      }
     }
     return fragment;
   }
@@ -94,8 +97,8 @@
     }
   }
 
-  function getPinData(successHandler, errorHandler) {
-    getDataFromServer(GET_ADS_URL, successHandler, errorHandler);
+  function getPinData(success, error) {
+    getDataFromServer(GET_ADS_URL, success, error);
   }
 
   function savePinState(pin) {
@@ -136,6 +139,7 @@
   function onSuccess(data) {
     window.pin.originalData = data;
     var croppedPinsList = cropData(data);
+    prepareFormInputs(filtersForm, false);
     renderPins(croppedPinsList);
   }
 
@@ -167,6 +171,7 @@
 
   var mainPin = document.querySelector('.map__pin--main');
   var filtersContainer = document.querySelector('.map__filters-container');
+  var filtersForm = document.querySelector('.map__filters');
   var isActive = false;
   var DRAG_LIMIT = {
     maxY: 630,
