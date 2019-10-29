@@ -24,21 +24,25 @@
     dragPin(evt, DRAG_LIMIT);
   }
 
-  function Coords(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-
   function dragPin(evt, limit) {
     evt.preventDefault();
-    var startCoords = new Coords(evt.clientX, evt.clientY);
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
 
     function onMouseMove(moveEvt) {
       moveEvt.preventDefault();
-      var shiftX = startCoords.x - moveEvt.clientX;
-      var shiftY = startCoords.y - moveEvt.clientY;
-      var shift = new Coords(shiftX, shiftY);
-      startCoords = new Coords(moveEvt.clientX, moveEvt.clientY);
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
       var pinY = (mainPin.offsetTop - shift.y);
       var pinX = (mainPin.offsetLeft - shift.x);
       if (pinY >= limit.minY && pinY <= limit.maxY && pinX > limit.minX && pinX <= limit.maxX) {
