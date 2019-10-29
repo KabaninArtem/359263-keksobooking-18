@@ -6,10 +6,12 @@
   var restorePinPosition = window.pin.restorePinPosition;
   var createError = window.requestStatus.createError;
   var prepareFormInputs = window.util.prepareFormInputs;
+  var createImg = window.util.createImg;
   var updateErrorMessage = window.requestStatus.updateErrorMessage;
   var createOverlayMessage = window.requestStatus.createOverlayMessage;
   var closePopUp = window.window.descriptionPopUp.close;
   var sendDataToServer = window.xhr.sendDataToServer;
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
   var BIG_ROOM_QUANTITY = '100';
   var NOT_FOR_GUESTS = '0';
   var PRICES = {
@@ -17,6 +19,10 @@
     flat: 1000,
     house: 5000,
     palace: 10000,
+  };
+  var PHOTO_SIZES = {
+    width: 40,
+    height: 44
   };
   var URL = 'https://js.dump.academy/keksobooking';
 
@@ -68,6 +74,7 @@
     function sendFormDataAgain() {
       sendFormData(onAgainSuccess, onAgainError);
     }
+
     function onAgainSuccess() {
       document.removeChild(messageElem);
       onSuccess();
@@ -112,6 +119,32 @@
     setActivateListeners();
   }
 
+  function onHousePhotoLoad(reader) {
+    var img = housePhotos.querySelector('img');
+    var readerResult = reader.result;
+    if (!img) {
+      var createdImg = createImg(readerResult, PHOTO_SIZES, 'Фотография жилья');
+      housePhotos.appendChild(createdImg);
+    } else {
+      img.src = readerResult;
+    }
+  }
+
+  function processUploaderImg(fileChooser, onLoad) {
+    var file = fileChooser.files[0];
+    var fileName = file.name.toLowerCase();
+    var matches = FILE_TYPES.some(function (type) {
+      return fileName.endsWith(type);
+    });
+    if (matches) {
+      var reader = new FileReader();
+      reader.addEventListener('load', function () {
+        onLoad(reader);
+      });
+      reader.readAsDataURL(file);
+    }
+  }
+
   var houseType = document.querySelector('#type');
   var timein = document.querySelector('#timein');
   var timeout = document.querySelector('#timeout');
@@ -121,6 +154,22 @@
   var adFormReset = document.querySelector('.ad-form__reset');
   var filtersForm = document.querySelector('.map__filters');
   var pin = document.querySelector('.map__pin--main');
+  var headerUpload = document.querySelector('.ad-form-header__upload');
+  var headerFileChooser = headerUpload.querySelector('input[type=file]');
+  var housePhotoContainer = document.querySelector('.ad-form__photo-container');
+  var housePhotos = housePhotoContainer.querySelector('.ad-form__photo');
+  var housingPhotoFileChooser = housePhotoContainer.querySelector('input[type=file]');
+  var headerPreview = headerUpload.querySelector('.ad-form-header__preview img');
+
+  headerFileChooser.addEventListener('change', function () {
+    processUploaderImg(headerFileChooser, function (reader) {
+      headerPreview.src = reader.result;
+    });
+  });
+
+  housingPhotoFileChooser.addEventListener('change', function () {
+    processUploaderImg(housingPhotoFileChooser, onHousePhotoLoad);
+  });
 
   roomNumber.addEventListener('change', function (evt) {
     onRoomQuantityChange(evt, capacitySelect, BIG_ROOM_QUANTITY, NOT_FOR_GUESTS);
