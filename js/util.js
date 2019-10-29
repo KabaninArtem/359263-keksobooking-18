@@ -28,5 +28,11 @@
         y: Math.floor(pin.offsetTop + template.height),
       };
     },
+    createImg: function (result, sizes, alt) {
+      var img = new Image(sizes.width, sizes.height);
+      img.src = result;
+      img.alt = alt;
+      return img;
+    }
   };
 })();
