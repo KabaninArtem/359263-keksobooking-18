@@ -3,26 +3,22 @@
 (function () {
   var isEscEvent = window.util.isEscEvent;
 
-  function getOverlayTemplate(status) {
-    var template = document.querySelector('#' + status).content.cloneNode(true);
-    return template.querySelector('.' + status);
-  }
-
-  function createOverlayMessage(status) {
-    var template = getOverlayTemplate(status);
+  function createOverlayMessage(template) {
+    var templateFragment = template.content.cloneNode(true);
+    var templateMessage = templateFragment.querySelector('div');
 
     function onOverlayEscPress(evt) {
       isEscEvent(evt, closeOverlay);
     }
 
     function closeOverlay() {
-      document.body.removeChild(template);
+      document.body.removeChild(templateMessage);
       document.removeEventListener('keydown', onOverlayEscPress);
     }
 
     document.addEventListener('keydown', onOverlayEscPress);
-    template.addEventListener('click', closeOverlay);
-    return template;
+    templateMessage.addEventListener('click', closeOverlay);
+    return templateMessage;
   }
 
   function createError(overlayELem, errorMessage, serverRequest) {

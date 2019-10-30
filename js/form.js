@@ -44,12 +44,11 @@
     return +capacity > +roomQuantity || roomQuantity === bigRoomQuantity ? capacity : roomQuantity;
   }
 
-  function onHouseTypeChange(evt, prices) {
+  function onHouseTypeChange(evt, prices, elem) {
     var type = evt.target.value;
     var minPrice = prices[type] || 0;
-    var priceElem = document.querySelector('#price');
-    priceElem.min = minPrice;
-    priceElem.placeholder = minPrice;
+    elem.min = minPrice;
+    elem.placeholder = minPrice;
   }
 
   function onTimeChange(evt) {
@@ -68,7 +67,7 @@
   }
 
   function onError(errorMessage) {
-    var messageElem = createOverlayMessage('error');
+    var messageElem = createOverlayMessage(errorTemplate);
     createError(messageElem, errorMessage, sendFormDataAgain);
 
     function sendFormDataAgain() {
@@ -88,22 +87,20 @@
   }
 
   function onSuccess() {
-    var message = createOverlayMessage('success');
+    var message = createOverlayMessage(successTemplate);
     document.body.appendChild(message);
     customFormReset();
   }
 
-  function removePins() {
-    var mapPins = document.querySelector('.map__pins');
-    var pins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+  function removePins(map) {
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     pins.forEach(function (pin) {
-      mapPins.removeChild(pin);
+      map.removeChild(pin);
     });
   }
 
-  function mapDisable() {
-    var map = document.querySelector('.map');
-    map.classList.add('map--faded');
+  function mapDisable(mapElem) {
+    mapElem.classList.add('map--faded');
   }
 
   function customFormReset() {
@@ -112,10 +109,10 @@
     filtersForm.reset();
     prepareFormInputs(filtersForm, false);
     disableForm();
-    mapDisable();
-    removePins();
+    mapDisable(map);
+    removePins(mapPins);
     restorePosition(pin);
-    setPinAddress(pin);
+    setPinAddress(pin, addressInput);
     setActivateListeners();
   }
 
@@ -160,6 +157,13 @@
   var housePhotos = housePhotoContainer.querySelector('.ad-form__photo');
   var housingPhotoFileChooser = housePhotoContainer.querySelector('input[type=file]');
   var headerPreview = headerUpload.querySelector('.ad-form-header__preview img');
+  var priceElem = document.querySelector('#price');
+  var map = document.querySelector('.map');
+  var addressInput = document.querySelector('#address');
+  var mapPins = document.querySelector('.map__pins');
+  var errorTemplate = document.querySelector('#error');
+  var successTemplate = document.querySelector('#success');
+
 
   headerFileChooser.addEventListener('change', function () {
     processUploaderImg(headerFileChooser, function (reader) {
@@ -178,7 +182,7 @@
     onCapacityChange(evt, roomNumber, BIG_ROOM_QUANTITY, NOT_FOR_GUESTS);
   });
   houseType.addEventListener('change', function (evt) {
-    onHouseTypeChange(evt, PRICES);
+    onHouseTypeChange(evt, PRICES, priceElem);
   });
   timein.addEventListener('change', onTimeChange);
   timeout.addEventListener('change', onTimeChange);

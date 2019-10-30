@@ -11,8 +11,8 @@
   var prepareFormInputs = window.util.prepareFormInputs;
 
   function replacePins(newPins) {
-    removePins();
-    renderPins(newPins);
+    removePins(mapPins);
+    renderPins(newPins, mapPins);
   }
 
   function onFilterChange() {
@@ -73,6 +73,7 @@
   var rooms = form.querySelector('#housing-rooms');
   var guests = form.querySelector('#housing-guests');
   var featuresGroup = form.querySelector('#housing-features');
+  var mapPins = document.querySelector('.map__pins');
   var filteredPins = [];
 
   form.addEventListener('change', debounce(onFilterChange));
