@@ -1,6 +1,12 @@
 'use strict';
 
 (function () {
+  var GET_ADS_URL = 'https://js.dump.academy/keksobooking/data';
+  var PIN_TEMPLATE = {
+    width: 65,
+    height: 87
+  };
+  var MAX_PINS_QUANTITY = 5;
   var isEnterEvent = window.util.isEnterEvent;
   var prepareFormInputs = window.util.prepareFormInputs;
   var getPinPosition = window.util.getPinPosition;
@@ -10,18 +16,12 @@
   var createOverlayMessage = window.requestStatus.createOverlayMessage;
   var getDataFromServer = window.xhr.getDataFromServer;
   var pinPosition = {};
-  var GET_ADS_URL = 'https://js.dump.academy/keksobooking/data';
-  var PIN_TEMPLATE = {
-    width: 65,
-    height: 87
-  };
-  var MAX_PINS_QUANTITY = 5;
 
   function onPinActivate(evt) {
     if (!isActive) {
       activatePage();
     }
-    dragPin(evt, DRAG_LIMIT);
+    dragPin(evt, new DragLimit(mainPin));
   }
 
   function dragPin(evt, limit) {
@@ -45,10 +45,11 @@
       };
       var pinY = (mainPin.offsetTop - shift.y);
       var pinX = (mainPin.offsetLeft - shift.x);
+
       if (pinY >= limit.minY && pinY <= limit.maxY && pinX > limit.minX && pinX <= limit.maxX) {
         mainPin.style.top = pinY + 'px';
         mainPin.style.left = pinX + 'px';
-        setPinAddress(mainPin);
+        setPinAddress(mainPin, addressInput);
       }
     }
 
@@ -78,22 +79,20 @@
     return pin;
   }
 
-  function createPins(pinsData) {
+  function createPins(pinsData, template) {
     var fragment = document.createDocumentFragment();
-    var template = document.querySelector('#pin');
-    for (var i = 0, len = pinsData.length; i < len; i++) {
-      if (pinsData[i].offer) {
-        fragment.appendChild(createPin(pinsData[i], template));
+    pinsData.forEach(function (pinData) {
+      if (pinData.offer) {
+        fragment.appendChild(createPin(pinData, template));
       }
-    }
+    });
     return fragment;
   }
 
-  function renderPins(croppedPinsList) {
+  function renderPins(croppedPinsList, map) {
     if (croppedPinsList.length) {
-      var mapPins = document.querySelector('.map__pins');
-      var pins = createPins(croppedPinsList, mapPins);
-      mapPins.appendChild(pins);
+      var pins = createPins(croppedPinsList, template);
+      map.appendChild(pins);
     }
   }
 
@@ -106,28 +105,26 @@
     pinPosition['left'] = pin.style.left;
   }
 
-  function restorePinPosition(pin) {
+  function restorePosition(pin) {
     pin.style.top = pinPosition['top'];
     pin.style.left = pinPosition['left'];
   }
 
-  function mapEnable() {
+  function mapEnable(map) {
     getPinData(onSuccess, onError);
-    var map = document.querySelector('.map');
     map.classList.remove('map--faded');
-    setPinAddress(mainPin);
+    setPinAddress(mainPin, addressInput);
   }
 
-  function formEnable() {
-    var adForm = document.querySelector('.ad-form');
-    adForm.classList.remove('ad-form--disabled');
-    prepareFormInputs(adForm, false);
+  function formEnable(form) {
+    form.classList.remove('ad-form--disabled');
+    prepareFormInputs(form, false);
     savePinState(mainPin);
   }
 
   function activatePage() {
-    mapEnable();
-    formEnable();
+    mapEnable(map);
+    formEnable(adForm);
     isActive = true;
   }
 
@@ -140,11 +137,11 @@
     window.pin.originalData = data;
     var croppedPinsList = cropData(data);
     prepareFormInputs(filtersForm, false);
-    renderPins(croppedPinsList);
+    renderPins(croppedPinsList, mapPins);
   }
 
   function onError(errorMessage) {
-    var overlayElem = createOverlayMessage('error');
+    var overlayElem = createOverlayMessage(errorTemplate);
     createError(overlayElem, errorMessage, againServerRequest);
 
     function againServerRequest() {
@@ -163,22 +160,17 @@
     document.body.appendChild(overlayElem);
   }
 
-  function setPinAddress(pin) {
-    var addressInput = document.querySelector('#address');
+  function setPinAddress(pin, input) {
     var position = getPinPosition(pin, PIN_TEMPLATE);
-    addressInput.value = position.x + ', ' + position.y;
+    input.value = position.x + ', ' + position.y;
   }
 
-  var mainPin = document.querySelector('.map__pin--main');
-  var filtersContainer = document.querySelector('.map__filters-container');
-  var filtersForm = document.querySelector('.map__filters');
-  var isActive = false;
-  var DRAG_LIMIT = {
-    maxY: 630,
-    minY: 130,
-    minX: 0,
-    maxX: mainPin.parentElement.offsetWidth - mainPin.offsetWidth
-  };
+  function DragLimit(pin) {
+    this.maxY = 630 - PIN_TEMPLATE.height;
+    this.minY = 130 - PIN_TEMPLATE.height;
+    this.minX = 0;
+    this.maxX = pin.parentElement.offsetWidth - pin.offsetWidth;
+  }
 
   function setActivateListeners() {
     isActive = false;
@@ -188,10 +180,21 @@
     });
   }
 
+  var mainPin = document.querySelector('.map__pin--main');
+  var filtersContainer = document.querySelector('.map__filters-container');
+  var filtersForm = document.querySelector('.map__filters');
+  var template = document.querySelector('#pin');
+  var map = document.querySelector('.map');
+  var mapPins = document.querySelector('.map__pins');
+  var adForm = document.querySelector('.ad-form');
+  var addressInput = document.querySelector('#address');
+  var errorTemplate = document.querySelector('#error');
+  var isActive = false;
+
   setActivateListeners();
   window.pin = {
     setAddress: setPinAddress,
-    restorePinPosition: restorePinPosition,
+    restorePosition: restorePosition,
     setActivateListeners: setActivateListeners,
     render: renderPins,
     cropData: cropData,

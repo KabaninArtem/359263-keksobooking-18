@@ -6,11 +6,10 @@
 
   window.util = {
     prepareFormInputs: function (form, isDisabled) {
-      var children = form.children;
-
-      for (var i = 0, len = children.length; i < len; i++) {
-        children[i].disabled = isDisabled || false;
-      }
+      var children = Array.from(form.children);
+      children.forEach(function (child) {
+        child.disabled = isDisabled || false;
+      });
     },
     isEscEvent: function isEscEvent(evt, action) {
       if (evt.keyCode === ESC_KEYCODE) {

@@ -11,8 +11,8 @@
   var prepareFormInputs = window.util.prepareFormInputs;
 
   function replacePins(newPins) {
-    removePins();
-    renderPins(newPins);
+    removePins(mapPins);
+    renderPins(newPins, mapPins);
   }
 
   function onFilterChange() {
@@ -22,37 +22,27 @@
     var roomsValue = rooms.value;
     var guestsValue = guests.value;
 
-    filteredPins = houseTypeValue !== 'any' ? filterConstructor('type', houseTypeValue, originalData) : originalData;
-    filteredPins = priceValue !== 'any' ? priceFilter(priceValue, filteredPins) : filteredPins;
-    filteredPins = roomsValue !== 'any' ? filterConstructor('rooms', +roomsValue, filteredPins) : filteredPins;
-    filteredPins = guestsValue !== 'any' ? filterConstructor('guests', +guestsValue, filteredPins) : filteredPins;
+    filteredPins = originalData.filter(function (pin) {
+      return (houseTypeValue !== 'any' ? pin.offer.type === houseTypeValue : true)
+        && (roomsValue !== 'any' ? pin.offer.rooms === +roomsValue : true)
+        && (guestsValue !== 'any' ? pin.offer.guests === +guestsValue : true)
+        && (priceFilter(priceValue, pin));
+    });
     filteredPins = featuresFilter(featuresGroup, filteredPins);
     closeDescription();
     replacePins(filteredPins);
   }
 
-  function filterConstructor(filterField, filterName, pins) {
-    return pins.filter(function (pin) {
-      return pin.offer[filterField] === filterName;
-    });
-  }
-
-  function priceFilter(filterName, pins) {
+  function priceFilter(filterName, pin) {
     switch (filterName) {
       case 'low':
-        return pins.filter(function (pin) {
-          return pin.offer.price < LOW_PRICE;
-        });
+        return pin.offer.price < LOW_PRICE;
       case 'middle':
-        return pins.filter(function (pin) {
-          return pin.offer.price < MIDDLE_PRICE && pin.offer.price >= LOW_PRICE;
-        });
+        return pin.offer.price < MIDDLE_PRICE && pin.offer.price >= LOW_PRICE;
       case 'high':
-        return pins.filter(function (pin) {
-          return pin.offer.price >= MIDDLE_PRICE;
-        });
+        return pin.offer.price >= MIDDLE_PRICE;
       default:
-        return pins;
+        return true;
     }
   }
 
@@ -83,24 +73,10 @@
   var rooms = form.querySelector('#housing-rooms');
   var guests = form.querySelector('#housing-guests');
   var featuresGroup = form.querySelector('#housing-features');
-  var filterWifi = form.querySelector('#filter-wifi');
-  var filterDishwasher = form.querySelector('#filter-dishwasher');
-  var filterParking = form.querySelector('#filter-parking');
-  var filterWasher = form.querySelector('#filter-washer');
-  var filterElevator = form.querySelector('#filter-elevator');
-  var filterConditioner = form.querySelector('#filter-conditioner');
+  var mapPins = document.querySelector('.map__pins');
   var filteredPins = [];
 
-  housingType.addEventListener('change', debounce(onFilterChange));
-  price.addEventListener('change', debounce(onFilterChange));
-  rooms.addEventListener('change', debounce(onFilterChange));
-  guests.addEventListener('change', debounce(onFilterChange));
-  filterWifi.addEventListener('change', debounce(onFilterChange));
-  filterDishwasher.addEventListener('change', debounce(onFilterChange));
-  filterParking.addEventListener('change', debounce(onFilterChange));
-  filterWasher.addEventListener('change', debounce(onFilterChange));
-  filterElevator.addEventListener('change', debounce(onFilterChange));
-  filterConditioner.addEventListener('change', debounce(onFilterChange));
+  form.addEventListener('change', debounce(onFilterChange));
 
   prepareFormInputs(form, true);
 })();
