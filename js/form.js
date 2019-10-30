@@ -17,7 +17,7 @@
   var URL = 'https://js.dump.academy/keksobooking';
   var setPinAddress = window.pin.setAddress;
   var setActivateListeners = window.pin.setActivateListeners;
-  var restorePinPosition = window.pin.restorePinPosition;
+  var restorePosition = window.pin.restorePosition;
   var createError = window.requestStatus.createError;
   var prepareFormInputs = window.util.prepareFormInputs;
   var createImg = window.util.createImg;
@@ -96,9 +96,9 @@
   function removePins() {
     var mapPins = document.querySelector('.map__pins');
     var pins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-    for (var i = 0, length = pins.length; i < length; i++) {
-      mapPins.removeChild(pins[i]);
-    }
+    pins.forEach(function (pin) {
+      mapPins.removeChild(pin);
+    });
   }
 
   function mapDisable() {
@@ -114,7 +114,7 @@
     disableForm();
     mapDisable();
     removePins();
-    restorePinPosition(pin);
+    restorePosition(pin);
     setPinAddress(pin);
     setActivateListeners();
   }

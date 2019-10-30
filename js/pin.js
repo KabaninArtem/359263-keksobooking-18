@@ -84,11 +84,11 @@
   function createPins(pinsData) {
     var fragment = document.createDocumentFragment();
     var template = document.querySelector('#pin');
-    for (var i = 0, len = pinsData.length; i < len; i++) {
-      if (pinsData[i].offer) {
-        fragment.appendChild(createPin(pinsData[i], template));
+    pinsData.forEach(function (pinData) {
+      if (pinData.offer) {
+        fragment.appendChild(createPin(pinData, template));
       }
-    }
+    });
     return fragment;
   }
 
@@ -109,7 +109,7 @@
     pinPosition['left'] = pin.style.left;
   }
 
-  function restorePinPosition(pin) {
+  function restorePosition(pin) {
     pin.style.top = pinPosition['top'];
     pin.style.left = pinPosition['left'];
   }
@@ -195,7 +195,7 @@
   setActivateListeners();
   window.pin = {
     setAddress: setPinAddress,
-    restorePinPosition: restorePinPosition,
+    restorePosition: restorePosition,
     setActivateListeners: setActivateListeners,
     render: renderPins,
     cropData: cropData,

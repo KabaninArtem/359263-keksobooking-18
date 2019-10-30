@@ -83,24 +83,9 @@
   var rooms = form.querySelector('#housing-rooms');
   var guests = form.querySelector('#housing-guests');
   var featuresGroup = form.querySelector('#housing-features');
-  var filterWifi = form.querySelector('#filter-wifi');
-  var filterDishwasher = form.querySelector('#filter-dishwasher');
-  var filterParking = form.querySelector('#filter-parking');
-  var filterWasher = form.querySelector('#filter-washer');
-  var filterElevator = form.querySelector('#filter-elevator');
-  var filterConditioner = form.querySelector('#filter-conditioner');
   var filteredPins = [];
 
-  housingType.addEventListener('change', debounce(onFilterChange));
-  price.addEventListener('change', debounce(onFilterChange));
-  rooms.addEventListener('change', debounce(onFilterChange));
-  guests.addEventListener('change', debounce(onFilterChange));
-  filterWifi.addEventListener('change', debounce(onFilterChange));
-  filterDishwasher.addEventListener('change', debounce(onFilterChange));
-  filterParking.addEventListener('change', debounce(onFilterChange));
-  filterWasher.addEventListener('change', debounce(onFilterChange));
-  filterElevator.addEventListener('change', debounce(onFilterChange));
-  filterConditioner.addEventListener('change', debounce(onFilterChange));
+  form.addEventListener('change', debounce(onFilterChange));
 
   prepareFormInputs(form, true);
 })();

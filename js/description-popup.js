@@ -61,21 +61,23 @@
 
   function createFeatureList(container, features) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0, len = features.length; i < len; i++) {
+    features.forEach(function (featureData) {
       var feature = document.createElement('li');
-      feature.classList.add('popup__feature', FEATURE_CLASS_TEMAPLTE + features[i]);
+      feature.classList.add('popup__feature', FEATURE_CLASS_TEMAPLTE + featureData);
       fragment.appendChild(feature);
-    }
+    });
+
     return fragment;
   }
 
   function createPhotos(template, photos) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0, len = photos.length; i < len; i++) {
+    photos.forEach(function (photo) {
       var img = template.cloneNode();
-      img.src = photos[i];
+      img.src = photo;
       fragment.appendChild(img);
-    }
+    });
+
     return fragment;
   }
 
