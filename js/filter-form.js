@@ -22,37 +22,27 @@
     var roomsValue = rooms.value;
     var guestsValue = guests.value;
 
-    filteredPins = houseTypeValue !== 'any' ? filterConstructor('type', houseTypeValue, originalData) : originalData;
-    filteredPins = priceValue !== 'any' ? priceFilter(priceValue, filteredPins) : filteredPins;
-    filteredPins = roomsValue !== 'any' ? filterConstructor('rooms', +roomsValue, filteredPins) : filteredPins;
-    filteredPins = guestsValue !== 'any' ? filterConstructor('guests', +guestsValue, filteredPins) : filteredPins;
+    filteredPins = originalData.filter(function (pin) {
+      return (houseTypeValue !== 'any' ? pin.offer.type === houseTypeValue : true)
+        && (roomsValue !== 'any' ? pin.offer.rooms === +roomsValue : true)
+        && (guestsValue !== 'any' ? pin.offer.guests === +guestsValue : true)
+        && (priceFilter(priceValue, pin));
+    });
     filteredPins = featuresFilter(featuresGroup, filteredPins);
     closeDescription();
     replacePins(filteredPins);
   }
 
-  function filterConstructor(filterField, filterName, pins) {
-    return pins.filter(function (pin) {
-      return pin.offer[filterField] === filterName;
-    });
-  }
-
-  function priceFilter(filterName, pins) {
+  function priceFilter(filterName, pin) {
     switch (filterName) {
       case 'low':
-        return pins.filter(function (pin) {
-          return pin.offer.price < LOW_PRICE;
-        });
+        return pin.offer.price < LOW_PRICE;
       case 'middle':
-        return pins.filter(function (pin) {
-          return pin.offer.price < MIDDLE_PRICE && pin.offer.price >= LOW_PRICE;
-        });
+        return pin.offer.price < MIDDLE_PRICE && pin.offer.price >= LOW_PRICE;
       case 'high':
-        return pins.filter(function (pin) {
-          return pin.offer.price >= MIDDLE_PRICE;
-        });
+        return pin.offer.price >= MIDDLE_PRICE;
       default:
-        return pins;
+        return true;
     }
   }
 

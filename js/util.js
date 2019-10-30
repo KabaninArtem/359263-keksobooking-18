@@ -6,7 +6,7 @@
 
   window.util = {
     prepareFormInputs: function (form, isDisabled) {
-      var children = form.children;
+      var children = Array.from(form.children);
       children.forEach(function (child) {
         child.disabled = isDisabled || false;
       });
