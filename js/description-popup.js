@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var isEscEvent = window.util.isEscEvent;
   var FEATURE_CLASS_TEMAPLTE = 'popup__feature--';
   var HUMANIZE_TYPE = {
     bungalo: 'Бунгало',
@@ -9,6 +8,7 @@
     house: 'Дом',
     palace: 'Дворец',
   };
+  var isEscEvent = window.util.isEscEvent;
 
   function createDetailsPopUp(template, data) {
     var card = template.cloneNode(true).content;

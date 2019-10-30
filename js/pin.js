@@ -1,6 +1,12 @@
 'use strict';
 
 (function () {
+  var GET_ADS_URL = 'https://js.dump.academy/keksobooking/data';
+  var PIN_TEMPLATE = {
+    width: 65,
+    height: 87
+  };
+  var MAX_PINS_QUANTITY = 5;
   var isEnterEvent = window.util.isEnterEvent;
   var prepareFormInputs = window.util.prepareFormInputs;
   var getPinPosition = window.util.getPinPosition;
@@ -10,18 +16,12 @@
   var createOverlayMessage = window.requestStatus.createOverlayMessage;
   var getDataFromServer = window.xhr.getDataFromServer;
   var pinPosition = {};
-  var GET_ADS_URL = 'https://js.dump.academy/keksobooking/data';
-  var PIN_TEMPLATE = {
-    width: 65,
-    height: 87
-  };
-  var MAX_PINS_QUANTITY = 5;
 
   function onPinActivate(evt) {
     if (!isActive) {
       activatePage();
     }
-    dragPin(evt, DRAG_LIMIT);
+    dragPin(evt, new DragLimit(mainPin));
   }
 
   function dragPin(evt, limit) {
@@ -169,16 +169,12 @@
     addressInput.value = position.x + ', ' + position.y;
   }
 
-  var mainPin = document.querySelector('.map__pin--main');
-  var filtersContainer = document.querySelector('.map__filters-container');
-  var filtersForm = document.querySelector('.map__filters');
-  var isActive = false;
-  var DRAG_LIMIT = {
-    maxY: 630,
-    minY: 130,
-    minX: 0,
-    maxX: mainPin.parentElement.offsetWidth - mainPin.offsetWidth
-  };
+  function DragLimit(pin) {
+    this.maxY = 630;
+    this.minY = 130;
+    this.minX = 0;
+    this.maxX = pin.parentElement.offsetWidth - pin.offsetWidth;
+  }
 
   function setActivateListeners() {
     isActive = false;
@@ -187,6 +183,11 @@
       isEnterEvent(evt, onPinActivate);
     });
   }
+
+  var mainPin = document.querySelector('.map__pin--main');
+  var filtersContainer = document.querySelector('.map__filters-container');
+  var filtersForm = document.querySelector('.map__filters');
+  var isActive = false;
 
   setActivateListeners();
   window.pin = {

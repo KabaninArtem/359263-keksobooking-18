@@ -1,16 +1,6 @@
 'use strict';
 
 (function () {
-  var setPinAddress = window.pin.setAddress;
-  var setActivateListeners = window.pin.setActivateListeners;
-  var restorePinPosition = window.pin.restorePinPosition;
-  var createError = window.requestStatus.createError;
-  var prepareFormInputs = window.util.prepareFormInputs;
-  var createImg = window.util.createImg;
-  var updateErrorMessage = window.requestStatus.updateErrorMessage;
-  var createOverlayMessage = window.requestStatus.createOverlayMessage;
-  var closePopUp = window.window.descriptionPopUp.close;
-  var sendDataToServer = window.xhr.sendDataToServer;
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
   var BIG_ROOM_QUANTITY = '100';
   var NOT_FOR_GUESTS = '0';
@@ -25,6 +15,16 @@
     height: 44
   };
   var URL = 'https://js.dump.academy/keksobooking';
+  var setPinAddress = window.pin.setAddress;
+  var setActivateListeners = window.pin.setActivateListeners;
+  var restorePinPosition = window.pin.restorePinPosition;
+  var createError = window.requestStatus.createError;
+  var prepareFormInputs = window.util.prepareFormInputs;
+  var createImg = window.util.createImg;
+  var updateErrorMessage = window.requestStatus.updateErrorMessage;
+  var createOverlayMessage = window.requestStatus.createOverlayMessage;
+  var closePopUp = window.window.descriptionPopUp.close;
+  var sendDataToServer = window.xhr.sendDataToServer;
 
   function onRoomQuantityChange(evt, capacity, bigRoomQuantity, notForGuests) {
     var quantity = evt.target.value;
