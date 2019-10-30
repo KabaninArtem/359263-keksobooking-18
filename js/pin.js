@@ -38,6 +38,7 @@
         x: startCoords.x - moveEvt.clientX,
         y: startCoords.y - moveEvt.clientY
       };
+      console.log('shift - ', shift);
 
       startCoords = {
         x: moveEvt.clientX,
@@ -45,6 +46,8 @@
       };
       var pinY = (mainPin.offsetTop - shift.y);
       var pinX = (mainPin.offsetLeft - shift.x);
+      console.log('pinY - ', pinY);
+      console.log(mainPin.offsetTop);
       if (pinY >= limit.minY && pinY <= limit.maxY && pinX > limit.minX && pinX <= limit.maxX) {
         mainPin.style.top = pinY + 'px';
         mainPin.style.left = pinX + 'px';
@@ -170,8 +173,8 @@
   }
 
   function DragLimit(pin) {
-    this.maxY = 630;
-    this.minY = 130;
+    this.maxY = 630 - PIN_TEMPLATE.height;
+    this.minY = 130 - PIN_TEMPLATE.height;
     this.minX = 0;
     this.maxX = pin.parentElement.offsetWidth - pin.offsetWidth;
   }
